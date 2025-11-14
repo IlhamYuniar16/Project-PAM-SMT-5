@@ -4,14 +4,20 @@ A new Flutter project.
 
 ## Getting Started
 
-# Copy Github
-```git clone https://github.com/IlhamYuniar16/Project-PAM-SMT-5.git```
+## Copy Github
+```bash
+git clone https://github.com/IlhamYuniar16/Project-PAM-SMT-5.git
+```
 
-# Flutter Pub Get
-```flutter pub get```
+## Flutter Pub Get
+```bash 
+flutter pub get
+```
 
-# Flutter Run
-```flutter run```
+## Flutter Run
+```bash
+flutter run
+```
 
 This project is a starting point for a Flutter application.
 
