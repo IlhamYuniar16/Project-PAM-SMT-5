@@ -8,7 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../providers/score_provider.dart';
 import 'screening_page_psikologi.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'result_page.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});

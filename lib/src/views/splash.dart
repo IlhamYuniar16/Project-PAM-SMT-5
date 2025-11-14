@@ -4,8 +4,8 @@ import 'package:flutter_project_pam/src/views/page_utama.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class HompSplashMe extends StatelessWidget {
-  const HompSplashMe({super.key});
+class HomeSplashMe extends StatelessWidget {
+  const HomeSplashMe({super.key});
 
   @override
   Widget build(BuildContext context) {

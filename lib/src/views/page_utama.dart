@@ -44,7 +44,6 @@ class _LoginPageState extends State<LoginPage> {
                   style: ButtonStyle(
                     backgroundColor:  MaterialStateProperty.all(Color(0xFF8A84FF)),
                     padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 50.w, vertical: 10.h)),
-
                     // shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(10.r)))
                   ),
                   child: Text('Mulai', style: GoogleFonts.poppins(textStyle: TextStyle(fontSize: 18.sp, color: Colors.white)),),
