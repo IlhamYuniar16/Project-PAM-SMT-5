@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_project_pam/feature/insightmind/presentation/pages/history_page.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/pages/result_page.dart';
-import 'package:flutter_project_pam/feature/insightmind/presentation/pages/screening_page_psikologi.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/pages/home_page.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/pages/setting.dart';
@@ -23,8 +21,6 @@ class _NavigationbarmeState extends State<Navigationbarme> {
   final List<Widget> _listPage = [
     const HomePage(),
     const ResultPage(),
-    // const Coba(),
-    // const ScreeningPage(),
     const Setting(),
   ];
 
@@ -51,7 +47,6 @@ class _NavigationbarmeState extends State<Navigationbarme> {
             _buildNavItem(Icons.home_outlined, "Home", 0),
             _buildNavItem(Icons.history, "History", 1),
             _buildNavItem(Icons.settings_outlined, "Setting", 2),
-            // _buildNavItem(Icons.settings_outlined, "Coba", 3),
           ],
         ),
       ),

@@ -1,10 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-// import 'package:flutter_project_pam/feature/insightmind/presentation/pages/home_page.dart';
 import 'package:flutter_project_pam/src/views/page_utama.dart';
-// import 'package:flutter_app_new/src/components/navigation.dart';
-// import 'package:flutter_app_new/src/views/pagehomelain.dart';
-// import 'package:flutter_app_new/src/views/pagehomelain.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 

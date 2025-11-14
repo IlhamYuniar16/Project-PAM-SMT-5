@@ -228,13 +228,9 @@ class ScreeningPageMental extends ConsumerWidget {
               for (final q in questions) {
                 answersOrdered.add(qState.answers[q.id]!);
               }
-              // set answers for score calculation
               ref.read(answersProvider.notifier).state = answersOrdered;
-
-              // build result and save to mental history
               final result = ref.read(resultProvider);
-              // resultProvider currently sets testType to 'psikologi' by default.
-              // create a new MentalResult with testType 'mental' to save under mental history
+
               final mentalResult = MentalResult(
                 score: result.score,
                 riskLevel: result.riskLevel,
@@ -247,7 +243,6 @@ class ScreeningPageMental extends ConsumerWidget {
                   .addResultToHistory(mentalResult);
 
               Navigator.of(context).pop();
-              // navigate to full app with History tab selected
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) =>  HistoryDetailPage(title: 'History Mental', result: result,),

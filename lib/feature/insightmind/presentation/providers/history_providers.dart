@@ -1,14 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../domain/entities/mental_result.dart';
 import '../../data/local/history_repository.dart';
 import '../../data/local/screening_record.dart';
-// screening_record model imported in repository; not needed directly here
 
-/// HistoryNotifier now persists to Hive via HistoryRepository.
+
 class HistoryNotifier extends StateNotifier<List<MentalResult>> {
   final HistoryRepository _repo;
-  final String _testType; // 'psikologi' or 'mental'
+  final String _testType; 
 
   HistoryNotifier(this._repo, this._testType) : super([]) {
     _loadFromRepo();
@@ -48,7 +46,6 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
     if (result.id != null) {
       await _repo.deleteById(result.id!);
     } else {
-      // fallback: try to find matching record by timestamp+score
       final records = await _repo.getAll();
       try {
         final match = records.firstWhere(
@@ -56,7 +53,6 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
         );
         await _repo.deleteById(match.id);
       } catch (_) {
-        // nothing
       }
     }
 

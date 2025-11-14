@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/pages/history_detail_page.dart';
-import 'package:flutter_project_pam/feature/insightmind/presentation/pages/history_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../domain/entities/question.dart';
 import '../providers/questionnaire_provider.dart';
-// import 'package:google_fonts/google_fonts.dart';
 import '../providers/score_provider.dart';
 import '../providers/history_providers.dart';
-import 'package:flutter_project_pam/src/views/navigationbarme.dart';
-// result_page.dart removed because navigation now goes to HistoryPage
+
 
 class ScreeningPage extends ConsumerWidget {
   const ScreeningPage({super.key});
@@ -248,7 +245,7 @@ class ScreeningPage extends ConsumerWidget {
             },
             child: Text(
               'Selesai',
-              style: GoogleFonts.poppins(textStyle: TextStyle()),
+              style: GoogleFonts.poppins(),
             ),
           ),
         ],

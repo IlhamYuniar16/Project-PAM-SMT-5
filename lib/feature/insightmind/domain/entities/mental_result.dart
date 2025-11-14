@@ -4,7 +4,7 @@ class MentalResult {
   final String riskLevel;
   final String description;
   final DateTime timestamp;
-  final String testType; // 'psikologi' or 'mental'
+  final String testType;
 
   MentalResult({
     this.id,

@@ -287,7 +287,6 @@ class HistoryCardPsikologi extends ConsumerWidget {
             IconButton(
               icon: const Icon(Icons.delete, color: Colors.red),
               onPressed: () {
-                // Show confirmation dialog
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
