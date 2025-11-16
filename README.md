@@ -9,7 +9,7 @@ A new Flutter project.
 git clone https://github.com/IlhamYuniar16/Project-PAM-SMT-5.git
 ```
 
-## Get Plugin/Package
+## Get Package
 ```bash 
 flutter pub get
 ```
