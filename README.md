@@ -9,12 +9,12 @@ A new Flutter project.
 git clone https://github.com/IlhamYuniar16/Project-PAM-SMT-5.git
 ```
 
-## Flutter Pub Get
+## Get Plugin/Package
 ```bash 
 flutter pub get
 ```
 
-## Flutter Run
+## Run Program
 ```bash
 flutter run
 ```

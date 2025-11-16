@@ -83,7 +83,7 @@ class _NavigationbarmeState extends State<Navigationbarme> {
                   : const Color(0xFF7A76A8),
             ),)
           ),
-          SizedBox(height: 10.h,),
+          SizedBox(height: 5.h,),
           AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             height: 4.h,

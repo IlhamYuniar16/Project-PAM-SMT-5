@@ -86,7 +86,7 @@ class HomePage extends ConsumerWidget {
               left: 0,
               right: 0,
               child: Container(
-                height: 585.h,
+                height: 600.h,
                 decoration: BoxDecoration(
                   color: Color(0xFFC7C3FF),
                   borderRadius: BorderRadius.only(
@@ -96,280 +96,348 @@ class HomePage extends ConsumerWidget {
                 ),
                 child: Stack(
                   children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            heightFactor: 2.h,
-                            child: Card(
-                              elevation: 1,
-                              child: Container(width: 60.w, height: 7.h),
-                            ),
-                          ),
-                          Text(
-                            'Pelajari Masalanya Yuk',
-                            style: GoogleFonts.poppins(
-                              textStyle: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          SizedBox(height: 15.h),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Column(
-                                children: [
-                                  Container(
-                                    // width: 170.w,
-                                    child: Card(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(20.w),
-                                        child: Column(
-                                          children: [
-                                            Text('Masalah Psikologi'),
-                                            Image.asset(
-                                              'assets/img/logoMasalah.png',
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              const MasalahPsikologi(),
-                                        ),
-                                      );
-                                    },
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                            Color(0xFFFFB7C5),
-                                          ),
-                                      padding: MaterialStateProperty.all(
-                                        EdgeInsets.symmetric(horizontal: 60.w),
-                                      ),
-                                      shape: MaterialStateProperty.all(
-                                        RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadiusGeometry.circular(
-                                                10.r,
-                                              ),
-                                        ),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'Lihat',
-                                      style: GoogleFonts.poppins(
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                    SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 20.h),
+                            Text(
+                              'Pelajari Masalanya Yuk',
+                              style: GoogleFonts.poppins(
+                                textStyle: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13.sp,
+                                ),
                               ),
-                              Column(
-                                children: [
-                                  Container(
-                                    width: 160.w,
-                                    child: Card(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(20.w),
-                                        child: Column(
-                                          children: [
-                                            Text('Masalah Mental'),
-                                            Image.asset(
-                                              'assets/img/logoMasalah.png',
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => const MasalahMental(),
-                                        ),
-                                      );
-                                    },
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                            Color(0xFFA8E6CF),
-                                          ),
-                                      padding: MaterialStateProperty.all(
-                                        EdgeInsets.symmetric(horizontal: 60.w),
-                                      ),
-                                      shape: MaterialStateProperty.all(
-                                        RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadiusGeometry.circular(
-                                                10.r,
-                                              ),
-                                        ),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'Lihat',
-                                      style: GoogleFonts.poppins(
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10.h),
-                          Text(
-                            'Pilih Jenis Tes',
-                            style: GoogleFonts.poppins(
-                              textStyle: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                          ),
-                          SizedBox(height: 10.h),
-                          Column(
-                            children: [
-                              Container(
-                                child: Card(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(10.w),
-                                    child: Row(
-                                      children: [
-                                        Image.asset('assets/img/logoOtak.png'),
-                                        SizedBox(width: 20.w),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Tes Psikologi',
-                                              style: GoogleFonts.poppins(
-                                                textStyle: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Color(0xFF8A84FF),
+                            SizedBox(height: 15.h),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const MasalahPsikologi(),
+                                          ),
+                                        );
+                                      },
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                              Color(0xFFFFB7C5),
+                                            ),
+                                        padding: MaterialStateProperty.all(
+                                          EdgeInsets.symmetric(horizontal: 0.w),
+                                        ),
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadiusGeometry.circular(
+                                                  10.r,
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            // width: 50.w,
+                                            // color: Color(0xFFFFB7C5),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(20.w),
+                                              child: Row(
+                                                children: [
+                                                  Image.asset(
+                                                    'assets/img/logoOtak.png',
+                                                    width: 60.w,
+                                                  ),
+                                                  SizedBox(width: 20.w),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        'Masalah Psikologi',
+                                                        style: GoogleFonts.poppins(
+                                                          textStyle: TextStyle(
+                                                            fontSize: 15.sp,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Color(
+                                                              0xFF8A84FF,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 7.h),
+                                                      Container(
+                                                        width: 200.w,
+                                                        child: Text(
+                                                          'Mari baca penyebab dari masalah psikologi sebelum terjadi',
+                                                          style: GoogleFonts.poppins(
+                                                            textStyle:
+                                                                TextStyle(
+                                                                  fontSize:
+                                                                      10.sp,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20.h),
+                                Column(
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const MasalahMental(),
+                                          ),
+                                        );
+                                      },
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                              Color(0xFFA8E6CF),
+                                            ),
+                                        padding: MaterialStateProperty.all(
+                                          EdgeInsets.symmetric(horizontal: 0.w),
+                                        ),
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadiusGeometry.circular(
+                                                  10.r,
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            // color: Color(0xFFA8E6CF),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(20.w),
+                                              child: Row(
+                                                children: [
+                                                  Image.asset(
+                                                    'assets/img/logoMental.png',
+                                                    width: 60.w,
+                                                  ),
+                                                  SizedBox(width: 20.w),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text('Masalah Mental', style: GoogleFonts.poppins(
+                                                          textStyle: TextStyle(
+                                                            fontSize: 15.sp,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Color(
+                                                              0xFF8A84FF,
+                                                            ),
+                                                          ),
+                                                        ),),
+                                                      SizedBox(height: 10.h,),
+                                                      Container(
+                                                        width: 230.w,
+                                                        child: Text(
+                                                          'Mari baca penyebab dari masalah kesehatan mental sebelum terjadi', style: GoogleFonts.poppins(
+                                                            textStyle:
+                                                                TextStyle(
+                                                                  fontSize:
+                                                                      10.sp,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10.h),
+                            Text(
+                              'Pilih Jenis Tes',
+                              style: GoogleFonts.poppins(
+                                textStyle: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 10.h),
+                            Column(
+                              children: [
+                                Container(
+                                  child: Card(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(10.w),
+                                      child: Row(
+                                        children: [
+                                          Image.asset(
+                                            'assets/img/logoOtak.png',
+                                          ),
+                                          SizedBox(width: 20.w),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Tes Psikologi',
+                                                style: GoogleFonts.poppins(
+                                                  textStyle: TextStyle(
+                                                    fontSize: 15.sp,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color(0xFF8A84FF),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            SizedBox(height: 6.h),
-                                            Container(
-                                              width: 210.w,
-                                              child: Text(
-                                                'Telusuri suasana hatimu, tingkat stres, dan keseimbangan emosional.',
-                                                style: GoogleFonts.poppins(),
+                                              SizedBox(height: 6.h),
+                                              Container(
+                                                width: 210.w,
+                                                child: Text(
+                                                  'Telusuri suasana hatimu, tingkat stres, dan keseimbangan emosional.',
+                                                  style: GoogleFonts.poppins(textStyle: TextStyle(fontSize: 10.sp)),
+                                                ),
                                               ),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        const ScreeningPage(),
-                                                  ),
-                                                );
-                                              },
-                                              style: ButtonStyle(
-                                                backgroundColor:
-                                                    MaterialStateProperty.all(
-                                                      Color(0xFFFFB7C5),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          const ScreeningPage(),
                                                     ),
-                                                padding:
-                                                    MaterialStateProperty.all(
-                                                      EdgeInsets.symmetric(
-                                                        horizontal: 30.w,
-                                                        vertical: 2.h,
+                                                  );
+                                                },
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                        Color(0xFFFFB7C5),
                                                       ),
-                                                    ),
+                                                  padding:
+                                                      MaterialStateProperty.all(
+                                                        EdgeInsets.symmetric(
+                                                          horizontal: 30.w,
+                                                          vertical: 2.h,
+                                                        ),
+                                                      ),
+                                                ),
+                                                child: Text('Mulai', style: GoogleFonts.poppins(textStyle: TextStyle(color:Colors.white))),
                                               ),
-                                              child: Text('Mulai'),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                child: Card(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(10.w),
-                                    child: Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/img/logoMental.png',
-                                        ),
-                                        SizedBox(width: 20.w),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Tes Kesehatan Mental',
-                                              style: GoogleFonts.poppins(
-                                                textStyle: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Color(0xFF8A84FF),
+                                SizedBox(height: 10.h),
+                                Container(
+                                  child: Card(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(10.w),
+                                      child: Row(
+                                        children: [
+                                          Image.asset(
+                                            'assets/img/logoMental.png',
+                                          ),
+                                          SizedBox(width: 20.w),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Tes Kesehatan Mental',
+                                                style: GoogleFonts.poppins(
+                                                  textStyle: TextStyle(
+                                                    fontSize: 15.sp,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color(0xFF8A84FF),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            SizedBox(height: 6.h),
-                                            Container(
-                                              width: 210.w,
-                                              child: Text(
-                                                'Cek kondisi fisikmu seperti detak jantung, pola tidur, dan tingkat energi',
-                                                style: GoogleFonts.poppins(),
+                                              SizedBox(height: 6.h),
+                                              Container(
+                                                width: 210.w,
+                                                child: Text(
+                                                  'Cek kondisi fisikmu seperti detak jantung, pola tidur, dan tingkat energi',
+                                                  style: GoogleFonts.poppins(textStyle: TextStyle(fontSize: 10.sp)),
+                                                ),
                                               ),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        const ScreeningPageMental(),
-                                                  ),
-                                                );
-                                              },
-                                              style: ButtonStyle(
-                                                backgroundColor:
-                                                    MaterialStateProperty.all(
-                                                      Color(0xFFA8E6CF),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          const ScreeningPageMental(),
                                                     ),
-                                                padding:
-                                                    MaterialStateProperty.all(
-                                                      EdgeInsets.symmetric(
-                                                        horizontal: 30.w,
-                                                        vertical: 2.h,
+                                                  );
+                                                },
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                        Color(0xFFA8E6CF),
                                                       ),
-                                                    ),
+                                                  padding:
+                                                      MaterialStateProperty.all(
+                                                        EdgeInsets.symmetric(
+                                                          horizontal: 30.w,
+                                                          // vertical: 2.h,
+                                                        ),
+                                                      ),
+                                                ),
+                                                child: Text('Mulai', style: GoogleFonts.poppins(textStyle: TextStyle(color:Colors.white))),
                                               ),
-                                              child: Text('Mulai'),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     // Row(

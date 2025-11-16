@@ -24,7 +24,7 @@ class ScreeningPageMental extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Tes Mental'),
-            Image.asset('assets/img/logonotext.png', width: 50.w, height: 47.w),
+            Image.asset('assets/img/logonotext.png', width: 30.w,),
           ],
         ),
         backgroundColor: Color(0xFF8A84FF),
@@ -100,6 +100,7 @@ class ScreeningPageMental extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  SizedBox(height: 20.h,)
                 ],
               ),
             ),

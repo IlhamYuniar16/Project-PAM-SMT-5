@@ -26,7 +26,7 @@ class _MasalahPsikologiState extends State<MasalahPsikologi> {
                 textStyle: TextStyle(fontSize: 18.sp, color: Colors.white),
               ),
             ),
-            Image.asset('assets/img/logonotext.png', width: 50.w),
+            Image.asset('assets/img/logonotext.png', width: 30.w),
           ],
         ),
       ),
@@ -97,13 +97,7 @@ class _MasalahPsikologiState extends State<MasalahPsikologi> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Center(
-                          heightFactor: 2.h,
-                          child: Card(
-                            elevation: 1,
-                            child: Container(width: 60.w, height: 7.h),
-                          ),
-                        ),
+                        SizedBox(height: 20.h,),
                         Text(
                           'Mengapa Penting Mempelajari Ini?',
                           style: GoogleFonts.poppins(

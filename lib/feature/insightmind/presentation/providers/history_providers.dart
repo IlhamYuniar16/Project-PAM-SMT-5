@@ -3,10 +3,13 @@ import '../../domain/entities/mental_result.dart';
 import '../../data/local/history_repository.dart';
 import '../../data/local/screening_record.dart';
 
+final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
+  return HistoryRepository();
+});
 
 class HistoryNotifier extends StateNotifier<List<MentalResult>> {
   final HistoryRepository _repo;
-  final String _testType; 
+  final String _testType;
 
   HistoryNotifier(this._repo, this._testType) : super([]) {
     _loadFromRepo();
@@ -18,12 +21,12 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
       state = records
           .map(
             (r) => MentalResult(
+              id: r.id,
               score: r.score,
               riskLevel: r.riskLevel,
               description: r.note ?? r.riskLevel,
               timestamp: r.timestamp,
               testType: _testType,
-              id: r.id,
             ),
           )
           .toList();
@@ -33,7 +36,6 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
   }
 
   Future<void> addResultToHistory(MentalResult result) async {
-    // persist
     await _repo.addRecord(
       score: result.score,
       riskLevel: result.riskLevel,
@@ -52,8 +54,7 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
           (r) => r.score == result.score && r.timestamp == result.timestamp,
         );
         await _repo.deleteById(match.id);
-      } catch (_) {
-      }
+      } catch (_) {}
     }
 
     await _loadFromRepo();
@@ -61,26 +62,24 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
 
   Future<void> clearHistory() async {
     await _repo.clearAll();
-    state = [];
+    state = []; 
   }
 }
 
 final psikologiHistoryProvider =
     StateNotifierProvider<HistoryNotifier, List<MentalResult>>((ref) {
-      final repo = HistoryRepository();
-      return HistoryNotifier(repo, 'psikologi');
-    });
+  final repo = ref.watch(historyRepositoryProvider); 
+  return HistoryNotifier(repo, 'psikologi');
+});
 
 final mentalHistoryProvider =
     StateNotifierProvider<HistoryNotifier, List<MentalResult>>((ref) {
-      final repo = HistoryRepository();
-      return HistoryNotifier(repo, 'mental');
-    });
-final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
- return HistoryRepository();
+  final repo = ref.watch(historyRepositoryProvider); 
+  return HistoryNotifier(repo, 'mental');
 });
 
+
 final historyListProvider = FutureProvider<List<ScreeningRecord>>((ref) async {
- final repo = ref.watch(historyRepositoryProvider);
- return repo.getAll();
+  final repo = ref.watch(historyRepositoryProvider);
+  return repo.getAll();
 });

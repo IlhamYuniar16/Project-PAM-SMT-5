@@ -34,6 +34,7 @@ class _ResultPageState extends ConsumerState<ResultPage>
 
   @override
   Widget build(BuildContext context) {
+    // final historyAsync = ref.watch(historyListProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kHistoryPageBackgroundColor,
@@ -90,15 +91,16 @@ class _ResultPageState extends ConsumerState<ResultPage>
                     ),
                     child: Column(
                       children: [
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10.h),
-                            child: Card(
-                              elevation: 1,
-                              child: SizedBox(width: 60.w, height: 7.h),
-                            ),
-                          ),
-                        ),
+                        // Center(
+                        //   child: Padding(
+                        //     padding: EdgeInsets.symmetric(vertical: 10.h),
+                        //     child: Card(
+                        //       elevation: 1,
+                        //       child: SizedBox(width: 60.w, height: 7.h),
+                        //     ),
+                        //   ),
+                        // ),
+                        SizedBox(height: 20.h,),
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 16.w),
                           height: 40.h,
@@ -204,18 +206,22 @@ class HistoryListTab extends ConsumerWidget {
       );
     }
 
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      itemCount: historyList.length,
-      itemBuilder: (context, index) {
-        final MentalResult result = historyList[index];
+    return Scaffold(
+      backgroundColor: kHistoryPageBodyColor,
+      body: ListView.builder(
+        shrinkWrap: true,
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+        itemCount: historyList.length,
+        itemBuilder: (context, index) {
+          final MentalResult result = historyList[index];
 
-        if (type == HistoryType.psikologi) {
-          return HistoryCardPsikologi(result: result);
-        } else {
-          return HistoryCardMental(result: result);
-        }
-      },
+          if (type == HistoryType.psikologi) {
+            return HistoryCardPsikologi(result: result);
+          } else {
+            return HistoryCardMental(result: result);
+          }
+        },
+      ),
     );
   }
 }

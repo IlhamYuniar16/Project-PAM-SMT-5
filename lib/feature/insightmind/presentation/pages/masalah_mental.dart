@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/pages/screening_page_mental.dart';
-import 'package:flutter_project_pam/feature/insightmind/presentation/pages/screening_page_psikologi.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -27,7 +26,7 @@ class _MasalahMentalState extends State<MasalahMental> {
                 textStyle: TextStyle(fontSize: 18.sp, color: Colors.white),
               ),
             ),
-            Image.asset('assets/img/logonotext.png', width: 50.w),
+            Image.asset('assets/img/logonotext.png', width: 30.w),
           ],
         ),
       ),
@@ -89,13 +88,7 @@ class _MasalahMentalState extends State<MasalahMental> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Center(
-                          heightFactor: 2.h,
-                          child: Card(
-                            elevation: 1,
-                            child: Container(width: 60.w, height: 7.h),
-                          ),
-                        ),
+                        SizedBox(height: 20.h,),
                         Text(
                           'Kesehatan Mental Itu Penting',
                           style: GoogleFonts.poppins(
