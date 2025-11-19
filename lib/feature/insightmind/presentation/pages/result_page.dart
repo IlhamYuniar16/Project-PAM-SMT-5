@@ -19,11 +19,18 @@ class ResultPage extends ConsumerStatefulWidget {
 class _ResultPageState extends ConsumerState<ResultPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+    int _currentTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    _tabController.addListener(() {
+      setState(() {
+        _currentTabIndex = _tabController.index;
+      });
+    });
   }
 
   @override
@@ -34,7 +41,6 @@ class _ResultPageState extends ConsumerState<ResultPage>
 
   @override
   Widget build(BuildContext context) {
-    // final historyAsync = ref.watch(historyListProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kHistoryPageBackgroundColor,
@@ -72,6 +78,30 @@ class _ResultPageState extends ConsumerState<ResultPage>
         automaticallyImplyLeading: false,
       ),
       backgroundColor: kHistoryPageBackgroundColor,
+      floatingActionButton: Consumer(
+        builder: (context, ref, child) {
+          final provider = _currentTabIndex == 0 
+              ? psikologiHistoryProvider 
+              : mentalHistoryProvider;
+              
+          final historyList = ref.watch(provider);
+        
+          if (historyList.isEmpty) {
+            return const SizedBox.shrink();
+          }
+          
+          return FloatingActionButton(
+            onPressed: () {
+              _showDeleteAllDialog(context, ref, provider, _currentTabIndex);
+            },
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+            elevation: 4.0,
+            child: const Icon(Icons.delete_sweep),
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -91,16 +121,7 @@ class _ResultPageState extends ConsumerState<ResultPage>
                     ),
                     child: Column(
                       children: [
-                        // Center(
-                        //   child: Padding(
-                        //     padding: EdgeInsets.symmetric(vertical: 10.h),
-                        //     child: Card(
-                        //       elevation: 1,
-                        //       child: SizedBox(width: 60.w, height: 7.h),
-                        //     ),
-                        //   ),
-                        // ),
-                        SizedBox(height: 20.h,),
+                        SizedBox(height: 20.h),
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 16.w),
                           height: 40.h,
@@ -159,6 +180,49 @@ class _ResultPageState extends ConsumerState<ResultPage>
     );
   }
 
+  void _showDeleteAllDialog(
+    BuildContext context, 
+    WidgetRef ref, 
+    StateNotifierProvider<HistoryNotifier, List<MentalResult>> provider,
+    int currentTabIndex
+  ) {
+    final tabName = currentTabIndex == 0 ? 'Psikologi' : 'Mental';
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('Hapus Semua Riwayat $tabName'),
+        content: Text(
+          'Apakah Anda yakin ingin menghapus SEMUA riwayat tes $tabName? Tindakan ini tidak dapat dibatalkan.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(provider.notifier).clearHistory();
+              Navigator.pop(context);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Semua riwayat tes $tabName berhasil dihapus'),
+                  backgroundColor: Colors.green,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            },
+            child: const Text(
+              'Hapus Semua',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSubtitle(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -166,7 +230,6 @@ class _ResultPageState extends ConsumerState<ResultPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            // width: 220.w,
             child: Text(
               'Yukk Jaga Kesehatan Mental dan Sikologi kalian',
               style: GoogleFonts.poppins(
@@ -184,7 +247,6 @@ class _ResultPageState extends ConsumerState<ResultPage>
     );
   }
 }
-
 enum HistoryType { psikologi, mental }
 
 class HistoryListTab extends ConsumerWidget {
@@ -198,37 +260,40 @@ class HistoryListTab extends ConsumerWidget {
     final List<MentalResult> historyList = ref.watch(provider);
 
     if (historyList.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No history found.',
-          style: TextStyle(color: Colors.black54),
+          style: TextStyle(color: Colors.black54, fontSize: 14.sp),
         ),
       );
     }
 
-    return Scaffold(
-      backgroundColor: kHistoryPageBodyColor,
-      body: ListView.builder(
-        shrinkWrap: true,
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-        itemCount: historyList.length,
-        itemBuilder: (context, index) {
-          final MentalResult result = historyList[index];
+    return ListView.builder(
+      shrinkWrap: true,
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      itemCount: historyList.length,
+      itemBuilder: (context, index) {
+        final MentalResult result = historyList[index];
 
-          if (type == HistoryType.psikologi) {
-            return HistoryCardPsikologi(result: result);
-          } else {
-            return HistoryCardMental(result: result);
-          }
-        },
-      ),
+        if (type == HistoryType.psikologi) {
+          return HistoryCardPsikologi(result: result, provider: provider);
+        } else {
+          return HistoryCardMental(result: result, provider: provider);
+        }
+      },
     );
   }
 }
 
 class HistoryCardPsikologi extends ConsumerWidget {
   final MentalResult result;
-  const HistoryCardPsikologi({super.key, required this.result});
+  final StateNotifierProvider<HistoryNotifier, List<MentalResult>> provider;
+  
+  const HistoryCardPsikologi({
+    super.key, 
+    required this.result, 
+    required this.provider
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -246,12 +311,44 @@ class HistoryCardPsikologi extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Tes Psikologi',
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Tes Psikologi',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.sp,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text('Hapus Riwayat'),
+                              content: const Text(
+                                'Apakah Anda yakin ingin menghapus riwayat ini?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Batal'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    ref.read(provider.notifier).removeResultFromHistory(result);
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Hapus'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   Text(
                     result.description,
@@ -290,35 +387,6 @@ class HistoryCardPsikologi extends ConsumerWidget {
                 ],
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                    title: const Text('Hapus Riwayat'),
-                    content: const Text(
-                      'Apakah Anda yakin ingin menghapus riwayat ini?',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Batal'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          ref
-                              .read(psikologiHistoryProvider.notifier)
-                              .removeResultFromHistory(result);
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Hapus'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
           ],
         ),
       ),
@@ -328,7 +396,13 @@ class HistoryCardPsikologi extends ConsumerWidget {
 
 class HistoryCardMental extends ConsumerWidget {
   final MentalResult result;
-  const HistoryCardMental({super.key, required this.result});
+  final StateNotifierProvider<HistoryNotifier, List<MentalResult>> provider;
+  
+  const HistoryCardMental({
+    super.key, 
+    required this.result, 
+    required this.provider
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -346,12 +420,44 @@ class HistoryCardMental extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Tes Kesehatan Mental',
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Tes Kesehatan Mental',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.sp,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text('Hapus Riwayat'),
+                              content: const Text(
+                                'Apakah Anda yakin ingin menghapus riwayat ini?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Batal'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    ref.read(provider.notifier).removeResultFromHistory(result);
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Hapus'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   Text(
                     result.description,
@@ -389,35 +495,6 @@ class HistoryCardMental extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                    title: const Text('Hapus Riwayat'),
-                    content: const Text(
-                      'Apakah Anda yakin ingin menghapus riwayat ini?',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Batal'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          ref
-                              .read(mentalHistoryProvider.notifier)
-                              .removeResultFromHistory(result);
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Hapus'),
-                      ),
-                    ],
-                  ),
-                );
-              },
             ),
           ],
         ),

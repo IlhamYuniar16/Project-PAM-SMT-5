@@ -18,12 +18,16 @@ class ScreeningRecord extends HiveObject {
   @HiveField(4)
   final String? note;
 
+  @HiveField(5)
+  final String testType;
+
   ScreeningRecord({
     required this.id,
     required this.timestamp,
     required this.score,
     required this.riskLevel,
     this.note,
+    required this.testType,
   });
 
   @override

@@ -16,6 +16,7 @@ class HistoryRepository {
     required int score,
     required String riskLevel,
     String? note,
+    required String testType,
   }) async {
     final box = await _openBox();
     final id = const Uuid().v4(); 
@@ -26,6 +27,7 @@ class HistoryRepository {
       score: score,
       riskLevel: riskLevel,
       note: note,
+      testType: testType, 
     );
 
     await box.put(id, record); 

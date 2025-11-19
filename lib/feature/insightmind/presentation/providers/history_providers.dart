@@ -1,15 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/entities/mental_result.dart';
 import '../../data/local/history_repository.dart';
 import '../../data/local/screening_record.dart';
-
-final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
-  return HistoryRepository();
-});
+import '../../domain/entities/mental_result.dart';
 
 class HistoryNotifier extends StateNotifier<List<MentalResult>> {
   final HistoryRepository _repo;
-  final String _testType;
+  final String _testType; 
 
   HistoryNotifier(this._repo, this._testType) : super([]) {
     _loadFromRepo();
@@ -18,15 +14,19 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
   Future<void> _loadFromRepo() async {
     try {
       final records = await _repo.getAll();
-      state = records
+      final filteredRecords = records.where((record) {
+        return record.testType == _testType;
+      }).toList();
+      
+      state = filteredRecords
           .map(
             (r) => MentalResult(
-              id: r.id,
               score: r.score,
               riskLevel: r.riskLevel,
               description: r.note ?? r.riskLevel,
               timestamp: r.timestamp,
               testType: _testType,
+              id: r.id,
             ),
           )
           .toList();
@@ -40,6 +40,7 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
       score: result.score,
       riskLevel: result.riskLevel,
       note: result.description,
+      testType: _testType,
     );
     await _loadFromRepo();
   }
@@ -51,35 +52,49 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
       final records = await _repo.getAll();
       try {
         final match = records.firstWhere(
-          (r) => r.score == result.score && r.timestamp == result.timestamp,
+          (r) => r.score == result.score && 
+                 r.timestamp == result.timestamp &&
+                 r.testType == _testType, 
         );
         await _repo.deleteById(match.id);
-      } catch (_) {}
+      } catch (_) {
+
+      }
     }
 
     await _loadFromRepo();
   }
 
   Future<void> clearHistory() async {
-    await _repo.clearAll();
-    state = []; 
+    final records = await _repo.getAll();
+
+    for (final record in records) {
+      if (record.testType == _testType) {
+        await _repo.deleteById(record.id);
+      }
+    }
+    
+    await _loadFromRepo();
   }
 }
 
+final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
+  return HistoryRepository();
+});
+
 final psikologiHistoryProvider =
     StateNotifierProvider<HistoryNotifier, List<MentalResult>>((ref) {
-  final repo = ref.watch(historyRepositoryProvider); 
-  return HistoryNotifier(repo, 'psikologi');
-});
+      final repo = ref.watch(historyRepositoryProvider);
+      return HistoryNotifier(repo, 'psikologi');
+    });
 
 final mentalHistoryProvider =
     StateNotifierProvider<HistoryNotifier, List<MentalResult>>((ref) {
-  final repo = ref.watch(historyRepositoryProvider); 
-  return HistoryNotifier(repo, 'mental');
-});
-
+      final repo = ref.watch(historyRepositoryProvider);
+      return HistoryNotifier(repo, 'mental');
+    });
 
 final historyListProvider = FutureProvider<List<ScreeningRecord>>((ref) async {
-  final repo = ref.watch(historyRepositoryProvider);
-  return repo.getAll();
+ final repo = ref.watch(historyRepositoryProvider);
+ return repo.getAll();
 });
