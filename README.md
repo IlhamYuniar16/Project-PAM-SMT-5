@@ -16,6 +16,17 @@ git clone https://github.com/IlhamYuniar16/Project-PAM-SMT-5.git
 flutter pub get
 ```
 
+## Install Handphone
+```bash 
+dart run flutter_launcher_icons
+```
+atau
+```bash
+dart run flutter_launcher_icons -f <your config file name here>
+```
+FUNGSINYA UNTUK MENGGANTI ICON FLUTTER MENJADI ICON ATAU LOGO DARI APLIKASI SOULSCAN 
+Lalu Run Program
+
 ## Run Program
 ```bash
 flutter run
