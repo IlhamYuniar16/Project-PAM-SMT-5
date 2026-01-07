@@ -24,7 +24,7 @@ class ScreeningPageMental extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Tes Mental'),
-            Image.asset('assets/img/logonotext.png', width: 30.w,),
+            Image.asset('assets/img/logonotext.png', width: 30.w),
           ],
         ),
         backgroundColor: Color(0xFF8A84FF),
@@ -100,7 +100,7 @@ class ScreeningPageMental extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20.h,)
+                  SizedBox(height: 20.h),
                 ],
               ),
             ),
@@ -224,6 +224,7 @@ class ScreeningPageMental extends ConsumerWidget {
               backgroundColor: MaterialStateProperty.all(Color(0xFF8A84FF)),
               elevation: MaterialStateProperty.all(5),
             ),
+            // Di ScreeningPageMental, ubah bagian ini:
             onPressed: () {
               final answersOrdered = <int>[];
               for (final q in questions) {
@@ -232,21 +233,23 @@ class ScreeningPageMental extends ConsumerWidget {
               ref.read(answersProvider.notifier).state = answersOrdered;
               final result = ref.read(resultProvider);
 
-              final mentalResult = MentalResult(
-                score: result.score,
-                riskLevel: result.riskLevel,
-                description: result.description,
-                timestamp: result.timestamp,
-                testType: 'mental',
-              );
+              // Panggil addResultToHistory dengan parameter yang benar
               ref
                   .read(mentalHistoryProvider.notifier)
-                  .addResultToHistory(mentalResult);
+                  .addResultToHistory(
+                    score: result.score,
+                    riskLevel: result.riskLevel,
+                    description: result.description,
+                    notes: result.description,
+                  );
 
               Navigator.of(context).pop();
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) =>  HistoryDetailPage(title: 'History Mental', result: result,),
+                  builder: (_) => HistoryDetailPage(
+                    title: 'History Mental',
+                    result: result,
+                  ),
                 ),
               );
             },

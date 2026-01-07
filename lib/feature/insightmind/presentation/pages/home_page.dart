@@ -1,5 +1,7 @@
 // lib/features/insightmind/presentation/pages/home_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_project_pam/feature/insightmind/presentation/pages/biometric_page.dart';
+import 'package:flutter_project_pam/feature/insightmind/presentation/pages/chat_bot.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/pages/masalah_psikologi.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/pages/masalah_mental.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/pages/screening_page_mental.dart';
@@ -22,18 +24,34 @@ class HomePage extends ConsumerWidget {
         backgroundColor: Color(0xFF8A84FF),
         title: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Image.asset('assets/img/logonotext.png', width: 40.w),
-            SizedBox(width: 10.w),
-            Text(
-              'SoulScan',
-              style: GoogleFonts.poppins(
-                textStyle: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.sp,
+            Row(
+              children: [
+                Image.asset('assets/img/logonotext.png', width: 40.w),
+                SizedBox(width: 10.w),
+                Text(
+                  'SoulScan',
+                  style: GoogleFonts.poppins(
+                    textStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.sp,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
+            ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatBot()));
+            }, 
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Color(0xFF8A84FF)),
+              elevation: MaterialStateProperty.all(0)
+            ),
+            icon: Icon(Icons.insights, size: 30, color: Colors.white,),
+            label: const Text("Bot SoulScan", style: TextStyle(color: Colors.white))
+            )
           ],
         ),
       ),
@@ -434,6 +452,72 @@ class HomePage extends ConsumerWidget {
                                     ),
                                   ),
                                 ),
+                                SizedBox(height: 10.h,),
+                                Container(
+                                  child: Card(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(10.w),
+                                      child: Row(
+                                        children: [
+                                          Image.asset(
+                                            'assets/img/logoMental.png',
+                                          ),
+                                          SizedBox(width: 20.w),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Tes Guna AI dan Sensor',
+                                                style: GoogleFonts.poppins(
+                                                  textStyle: TextStyle(
+                                                    fontSize: 15.sp,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color(0xFF8A84FF),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(height: 6.h),
+                                              Container(
+                                                width: 210.w,
+                                                child: Text(
+                                                  'Cek kondisi fisikmu dengan seberapa banyak gerakan pada tangan',
+                                                  style: GoogleFonts.poppins(textStyle: TextStyle(fontSize: 10.sp)),
+                                                ),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          const BiometricPage(),
+                                                    ),
+                                                  );
+                                                },
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                        Color(0xFFA8E6CF),
+                                                      ),
+                                                  padding:
+                                                      MaterialStateProperty.all(
+                                                        EdgeInsets.symmetric(
+                                                          horizontal: 30.w,
+                                                          // vertical: 2.h,
+                                                        ),
+                                                      ),
+                                                ),
+                                                child: Text('Mulai', style: GoogleFonts.poppins(textStyle: TextStyle(color:Colors.white))),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10.h,)
                               ],
                             ),
                           ],
@@ -498,6 +582,112 @@ class HomePage extends ConsumerWidget {
       //   },
       //   child: const Icon(Icons.add),
       // ),
+    );
+  }
+  // 🔵 KOMPONEN CARD NEUMORPHISM
+  Widget _buildSoftCard({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String description,
+    required String buttonText,
+    required VoidCallback onPressed,
+    required String footer,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F4FF),
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          // Bayangan kiri
+          BoxShadow(
+            color: Colors.white.withOpacity(0.9),
+            offset: const Offset(-6, -6),
+            blurRadius: 12,
+          ),
+          // Bayangan kanan
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            offset: const Offset(6, 6),
+            blurRadius: 12,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Ikon bulat timbul
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F4FF),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.white.withOpacity(0.9),
+                  offset: const Offset(-4, -4),
+                  blurRadius: 10,
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  offset: const Offset(4, 4),
+                  blurRadius: 10,
+                ),
+              ],
+            ),
+            child: Icon(icon, size: 32, color: Colors.blue.shade700),
+          ),
+
+          const SizedBox(height: 20),
+
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF2D3142),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            description,
+            style: const TextStyle(fontSize: 14, color: Color(0xFF4C5372)),
+          ),
+
+          const SizedBox(height: 20),
+
+          // BUTTON lembut
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue.shade600,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              elevation: 2,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            onPressed: onPressed,
+            child: Text(
+              buttonText,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          Text(
+            footer,
+            style: const TextStyle(
+              fontSize: 12,
+              fontStyle: FontStyle.italic,
+              color: Color(0xFF6A6F8C),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project_pam/feature/insightmind/presentation/pages/dashboard_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -150,7 +151,7 @@ class _SettingState extends State<Setting> {
                                           Row(
                                             children: [
                                               Icon(FontAwesomeIcons.square),
-                                              SizedBox(width: 10.w,),
+                                              SizedBox(width: 10.w),
                                               Text('Garis Tepi'),
                                             ],
                                           ),
@@ -209,6 +210,42 @@ class _SettingState extends State<Setting> {
                                     //     ],
                                     //   ),
                                     // ),
+                                    if (openGaris) Divider(color: Colors.black),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          Navigator.push(context, MaterialPageRoute(builder: (_) => const DashboardPage()));
+                                        });
+                                      },
+                                      style: ButtonStyle(
+                                        elevation: MaterialStateProperty.all(0),
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                              Colors.transparent,
+                                            ),
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadiusGeometry.circular(
+                                                  0,
+                                                ),
+                                          ),
+                                        ),
+                                        padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 5, vertical: 10))
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.dashboard, size: 25, color: Colors.black,),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            'Dashboard',
+                                            style: GoogleFonts.poppins(
+                                              textStyle: TextStyle(color: Colors.black),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -302,8 +339,11 @@ class _SettingState extends State<Setting> {
                                         children: [
                                           Row(
                                             children: [
-                                              Icon(FontAwesomeIcons.download, color: Colors.black),
-                                              SizedBox(width: 10.w,),
+                                              Icon(
+                                                FontAwesomeIcons.download,
+                                                color: Colors.black,
+                                              ),
+                                              SizedBox(width: 10.w),
                                               Text(
                                                 'Pembaharuan Aplikasi',
                                                 style: GoogleFonts.poppins(
@@ -348,8 +388,11 @@ class _SettingState extends State<Setting> {
                                         children: [
                                           Row(
                                             children: [
-                                              Icon(FontAwesomeIcons.bug, color: Colors.black),
-                                              SizedBox(width: 10.w,),
+                                              Icon(
+                                                FontAwesomeIcons.bug,
+                                                color: Colors.black,
+                                              ),
+                                              SizedBox(width: 10.w),
                                               Text(
                                                 'Laporkan Bug',
                                                 style: GoogleFonts.poppins(

@@ -20,6 +20,18 @@ dependencies:
   http: ^1.2.2
   cupertino_icons: ^1.0.8
   uuid: ^4.5.1
+  sensors_plus: ^7.0.0
+  camera: ^0.11.0+2
+  google_generative_ai: ^0.4.7
+  flutter_dotenv: ^6.0.0
+  pdf: ^3.10.6
+  printing: ^5.11.2
+  share_plus: ^7.2.1
+  intl: ^0.19.0
+  file_picker: ^10.3.8
+  fl_chart: ^1.1.1
+  percent_indicator: ^4.2.5
+  # google_generative_ai:
 
 dev_dependencies:
   flutter_test:
@@ -46,3 +58,4 @@ flutter:
     - assets/img/logoOtak.png
     - assets/img/logoMental.png
     - assets/icons/logonotext.png
+    - assets/.env

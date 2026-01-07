@@ -8,7 +8,6 @@ import '../providers/questionnaire_provider.dart';
 import '../providers/score_provider.dart';
 import '../providers/history_providers.dart';
 
-
 class ScreeningPage extends ConsumerWidget {
   const ScreeningPage({super.key});
 
@@ -100,7 +99,7 @@ class ScreeningPage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20.h,)
+                  SizedBox(height: 20.h),
                 ],
               ),
             ),
@@ -224,6 +223,7 @@ class ScreeningPage extends ConsumerWidget {
               backgroundColor: MaterialStateProperty.all(Color(0xFF8A84FF)),
               elevation: MaterialStateProperty.all(5),
             ),
+            // Di ScreeningPage psikologi, ubah bagian ini:
             onPressed: () {
               final answersOrdered = <int>[];
               for (final q in questions) {
@@ -232,22 +232,29 @@ class ScreeningPage extends ConsumerWidget {
               ref.read(answersProvider.notifier).state = answersOrdered;
 
               final result = ref.read(resultProvider);
+
+              // Panggil addResultToHistory dengan parameter yang benar
               ref
                   .read(psikologiHistoryProvider.notifier)
-                  .addResultToHistory(result);
+                  .addResultToHistory(
+                    score: result.score,
+                    riskLevel: result.riskLevel,
+                    description: result.description,
+                    notes: result
+                        .description, // atau tambahkan field notes di MentalResult
+                  );
 
-              // Navigator.of(context).pop();
+              Navigator.of(context).pop();
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) =>   HistoryDetailPage(title: 'History Psikologi',
-                            result: result,),
+                  builder: (_) => HistoryDetailPage(
+                    title: 'History Psikologi',
+                    result: result,
+                  ),
                 ),
               );
             },
-            child: Text(
-              'Selesai',
-              style: GoogleFonts.poppins(),
-            ),
+            child: Text('Selesai', style: GoogleFonts.poppins()),
           ),
         ],
       ),
