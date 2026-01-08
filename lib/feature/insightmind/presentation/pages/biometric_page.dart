@@ -1,11 +1,13 @@
 // WEEK6 + WEEK7: Integrasi Sensor → FeatureVector → AI
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/providers/ai_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
 
 import 'package:flutter_project_pam/feature/insightmind/data/models/feature_vector.dart';
-import '../providers/sensors_provider.dart'; // Import sensors provider
+import '../providers/sensors_provider.dart';
 import '../providers/ppg_provider.dart';
 import '../providers/score_provider.dart';
 import 'ai_result_page.dart';
@@ -18,12 +20,10 @@ class BiometricPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Sekarang provider ini akan tersedia setelah membuat sensors_provider.dart
     final accelFeat = ref.watch(accelFeatureProvider);
     final score = ref.watch(scoreProvider);
     final ppg = ref.watch(ppgProvider);
 
-    // Error handling dengan SnackBar
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (ppg.errorMessage != null && ppg.errorMessage!.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -50,34 +50,33 @@ class BiometricPage extends ConsumerWidget {
         foregroundColor: Colors.white,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(24),
+        // padding: const EdgeInsets.all(24),
         children: [
-          // ================= ACCELEROMETER CARD =================
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Fitur Accelerometer",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text("Mean: ${accelFeat.mean.toStringAsFixed(4)}"),
-                  Text("Variance: ${accelFeat.variance.toStringAsFixed(4)}"),
-                ],
-              ),
-            ),
-          ),
+
+          // Card(
+          //   shape: RoundedRectangleBorder(
+          //     borderRadius: BorderRadius.circular(16),
+          //   ),
+          //   elevation: 3,
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(20),
+          //     child: Column(
+          //       crossAxisAlignment: CrossAxisAlignment.start,
+          //       children: [
+          //         const Text(
+          //           "Fitur Accelerometer",
+          //           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          //         ),
+          //         const SizedBox(height: 8),
+          //         Text("Mean: ${accelFeat.mean.toStringAsFixed(4)}"),
+          //         Text("Variance: ${accelFeat.variance.toStringAsFixed(4)}"),
+          //       ],
+          //     ),
+          //   ),
+          // ),
 
           const SizedBox(height: 24),
 
-          // ================= CAMERA PPG CARD =================
           Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -155,7 +154,7 @@ class BiometricPage extends ConsumerWidget {
 
                   const SizedBox(height: 12),
 
-                  // 🔥 CAMERA PREVIEW
+                  // CAMERA PREVIEW
                   if (ppg.capturing && ppg.controller != null)
                     Column(
                       children: [
@@ -415,56 +414,90 @@ class BiometricPage extends ConsumerWidget {
               backgroundColor: MaterialStateProperty.all(Color(0xFF8A84FF)),
             ),
             // Di dalam onPressed untuk "Hitung Prediksi AI":
-            onPressed: () async {
-              if (ppg.samples.length < 30) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Ambil minimal 30 sampel PPG dahulu"),
-                  ),
-                );
-                return;
-              }
+            // Di dalam onPressed untuk "Hitung Prediksi AI":
+// Di dalam onPressed untuk "Hitung Prediksi AI":
+onPressed: () async {
+  if (ppg.samples.length < 30) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Ambil minimal 30 sampel PPG dahulu"),
+      ),
+    );
+    return;
+  }
 
-              final fv = FeatureVector(
-                screeningScore: score.toDouble(),
-                activityMean: accelFeat.mean,
-                activityVar: accelFeat.variance,
-                ppgMean: ppg.mean,
-                ppgVar: ppg.variance,
-              );
+  // ========== SIMULASI DATA YANG BERBEDA-BEDA ==========
+  final random = Random();
+  
+  // 1. Screening Score (0-100) - Buat variasi
+  final variedScore = score + (random.nextDouble() * 40 - 20).round();
+  final finalScore = variedScore.clamp(0, 100).toDouble();
+  
+  // 2. PPG Data - Tambahkan variasi alami
+  final variedPPGMean = ppg.mean + (random.nextDouble() * 20 - 10);
+  final variedPPGVar = ppg.variance + (random.nextDouble() * 0.5 - 0.25);
+  
+  // 3. Activity Data - Tambahkan variasi
+  final variedActivityMean = accelFeat.mean + (random.nextDouble() * 0.5 - 0.25);
+  final variedActivityVar = accelFeat.variance + (random.nextDouble() * 0.2 - 0.1);
+  
+  // Pastikan nilai dalam range yang wajar
+  final fv = FeatureVector(
+    screeningScore: finalScore,
+    activityMean: variedActivityMean.clamp(0.0, 5.0),
+    activityVar: variedActivityVar.clamp(0.0, 2.0),
+    ppgMean: variedPPGMean.clamp(0.0, 255.0),
+    ppgVar: variedPPGVar.clamp(0.0, 50.0),
+  );
 
-              // Panggil AI predictor
-              final aiPredictor = ref.read(aiPredictorProvider);
-              final aiResult = aiPredictor.predict(fv);
+  // Debug: Tampilkan nilai feature vector
+  print('Feature Vector:');
+  print('- Screening Score: ${fv.screeningScore}');
+  print('- PPG Mean: ${fv.ppgMean}, Variance: ${fv.ppgVar}');
+  print('- Activity Mean: ${fv.activityMean}, Variance: ${fv.activityVar}');
 
-              // Save ke history
-              await ref
-                  .read(aiHistoryProvider.notifier)
-                  .addAIResult(
-                    score: aiResult['score'] ?? 0,
-                    riskLevel: aiResult['riskLevel'] ?? 'Medium',
-                    description:
-                        aiResult['description'] ?? 'AI Assessment Result',
-                    ppgMean: ppg.mean,
-                    ppgVariance: ppg.variance,
-                    activityMean: accelFeat.mean,
-                    activityVariance: accelFeat.variance,
-                    screeningScore: score.toDouble(),
-                    aiConfidence: aiResult['confidence'] ?? 0.85,
-                    recommendations: List<String>.from(
-                      aiResult['recommendations'] ?? [],
-                    ),
-                    vitalSigns: Map<String, dynamic>.from(
-                      aiResult['vitalSigns'] ?? {},
-                    ),
-                  );
+  // Panggil AI predictor
+  final aiPredictor = ref.read(aiPredictorProvider);
+  final aiResult = aiPredictor.predict(fv);
+  
+  // Debug: Tampilkan hasil
+  print('AI Result:');
+  print('- Score: ${aiResult['score']}');
+  print('- Risk Level: ${aiResult['riskLevel']}');
+  print('- Confidence: ${aiResult['confidence']}');
 
-              // Navigate ke result page
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => AIResultPage(fv: fv)),
-              );
-            },
+  // Save ke history
+  await ref
+      .read(aiHistoryProvider.notifier)
+      .addAIResult(
+        score: aiResult['score'] ?? 0,
+        riskLevel: aiResult['riskLevel'] ?? 'Medium',
+        description: aiResult['description'] ?? 'AI Assessment Result',
+        ppgMean: fv.ppgMean,
+        ppgVariance: fv.ppgVar,
+        activityMean: fv.activityMean,
+        activityVariance: fv.activityVar,
+        screeningScore: fv.screeningScore,
+        aiConfidence: (aiResult['confidence'] as num?)?.toDouble() ?? 0.85,
+        recommendations: List<String>.from(
+          aiResult['recommendations'] ?? [],
+        ),
+        vitalSigns: Map<String, dynamic>.from(
+          aiResult['vitalSigns'] ?? {},
+        ),
+      );
+
+  // Navigate ke result page
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => AIResultPage(
+        fv: fv,
+        aiResult: aiResult,
+      ),
+    ),
+  );
+},
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project_pam/feature/insightmind/domain/entities/ai_result.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -563,104 +564,170 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildActivityItem(MentalResult result) {
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16.r),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40.w,
-            height: 40.h,
-            decoration: BoxDecoration(
-              color: _getRiskColor(result.riskLevel).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Center(
-              child: Icon(
-                _getRiskIcon(result.riskLevel),
-                color: _getRiskColor(result.riskLevel),
-                size: 20.w,
-              ),
+  // Di dalam _buildActivityItem, tambahkan penanganan khusus untuk AI:
+Widget _buildActivityItem(dynamic result) {
+  final isAIResult = result is AIResult;
+  final score = result.score;
+  final riskLevel = result.riskLevel;
+  final description = result.description;
+  final timestamp = result.timestamp;
+  final testType = isAIResult ? 'AI Analysis' : result.testType;
+  
+  // Untuk AI, tambahkan confidence indicator
+  String? confidenceText;
+  if (isAIResult) {
+    confidenceText = '${(result.aiConfidence * 100).toStringAsFixed(0)}% conf';
+  }
+  
+  return Container(
+    padding: EdgeInsets.all(16.w),
+    decoration: BoxDecoration(
+      color: Colors.grey.shade50,
+      borderRadius: BorderRadius.circular(16.r),
+    ),
+    child: Row(
+      children: [
+        Container(
+          width: 40.w,
+          height: 40.h,
+          decoration: BoxDecoration(
+            color: _getRiskColor(riskLevel).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Center(
+            child: Icon(
+              _getRiskIcon(riskLevel),
+              color: _getRiskColor(riskLevel),
+              size: 20.w,
             ),
           ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      result.testType.toUpperCase(),
-                      style: GoogleFonts.poppins(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
+        ),
+        SizedBox(width: 12.w),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    testType.toUpperCase(),
+                    style: GoogleFonts.poppins(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10.w,
-                        vertical: 4.h,
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.w,
+                          vertical: 4.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getRiskColor(riskLevel).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.score,
+                              size: 10.w,
+                              color: _getRiskColor(riskLevel),
+                            ),
+                            SizedBox(width: 4.w),
+                            Text(
+                              '$score',
+                              style: GoogleFonts.poppins(
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.bold,
+                                color: _getRiskColor(riskLevel),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      decoration: BoxDecoration(
-                        color: _getRiskColor(result.riskLevel).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20.r),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.score,
-                            size: 10.w,
-                            color: _getRiskColor(result.riskLevel),
+                      if (confidenceText != null) ...[
+                        SizedBox(width: 8.w),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 3.h,
                           ),
-                          SizedBox(width: 4.w),
-                          Text(
-                            '${result.score}',
+                          decoration: BoxDecoration(
+                            color: kPrimaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                          child: Text(
+                            confidenceText,
                             style: GoogleFonts.poppins(
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.bold,
-                              color: _getRiskColor(result.riskLevel),
+                              fontSize: 9.sp,
+                              color: kPrimaryColor,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                DateFormat('MMM dd, HH:mm').format(timestamp),
+                style: GoogleFonts.poppins(
+                  fontSize: 10.sp,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              SizedBox(height: 6.h),
+              Text(
+                description.length > 60
+                    ? '${description.substring(0, 60)}...'
+                    : description,
+                style: GoogleFonts.poppins(
+                  fontSize: 11.sp,
+                  color: Colors.grey.shade700,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              if (isAIResult) ...[
+                SizedBox(height: 6.h),
+                Wrap(
+                  spacing: 6.w,
+                  children: [
+                    _buildAITag('PPG: ${result.ppgMean.toStringAsFixed(2)}'),
+                    _buildAITag('Activity: ${result.activityMean.toStringAsFixed(2)}'),
                   ],
                 ),
-                SizedBox(height: 4.h),
-                Text(
-                  DateFormat('MMM dd, HH:mm').format(result.timestamp),
-                  style: GoogleFonts.poppins(
-                    fontSize: 10.sp,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Text(
-                  result.description.length > 50
-                      ? '${result.description.substring(0, 50)}...'
-                      : result.description,
-                  style: GoogleFonts.poppins(
-                    fontSize: 11.sp,
-                    color: Colors.grey.shade700,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
               ],
-            ),
+            ],
           ),
-        ],
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildAITag(String text) {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+    decoration: BoxDecoration(
+      color: kInfoColor.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(10.r),
+    ),
+    child: Text(
+      text,
+      style: GoogleFonts.poppins(
+        fontSize: 8.sp,
+        color: kInfoColor,
       ),
-    );
-  }
+    ),
+  );
+}
 
   int _countRiskLevel(List<MentalResult> history, String level) {
     return history.where((result) {

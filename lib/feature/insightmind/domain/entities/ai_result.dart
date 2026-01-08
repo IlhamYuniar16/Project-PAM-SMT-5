@@ -1,4 +1,3 @@
-// lib/feature/insightmind/domain/entities/ai_result.dart
 import 'package:flutter/foundation.dart';
 import '../entities/mental_result.dart';
 
@@ -11,7 +10,6 @@ class AIResult {
   final DateTime timestamp;
   final String testType;
   
-  // AI-specific fields
   final double ppgMean;
   final double ppgVariance;
   final double activityMean;
@@ -38,7 +36,6 @@ class AIResult {
     this.vitalSigns = const {},
   });
 
-  // Untuk kompatibilitas dengan MentalResult
   MentalResult toMentalResult() {
     return MentalResult(
       id: id,

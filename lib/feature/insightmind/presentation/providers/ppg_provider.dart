@@ -103,7 +103,7 @@ class PpgNotifier extends StateNotifier<PpgState> {
   }
 
   /// =======================
-  /// START CAMERA + PPG (DEFAULT BELAKANG)
+  /// START CAMERA + PPG 
   /// =======================
   Future<void> startCapture() async {
     state = state.copyWith(errorMessage: null);

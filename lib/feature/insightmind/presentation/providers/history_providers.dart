@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pdf/pdf.dart';
@@ -527,12 +528,14 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
   Future<void> _loadFromRepo() async {
     try {
       final records = await _repo.getAll();
-      final aiRecords = records.where((record) => record.testType == 'ai').toList();
+      final aiRecords = records
+          .where((record) => record.testType == 'ai')
+          .toList();
 
       state = aiRecords.map((r) {
         // Parse AI-specific data dari note field
         final aiData = _parseAIData(r.note ?? '');
-        
+
         return AIResult(
           id: r.id,
           score: r.score,
@@ -549,8 +552,7 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
           recommendations: aiData['recommendations'] ?? [],
           vitalSigns: aiData['vitalSigns'] ?? {},
         );
-      }).toList()
-      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      }).toList()..sort((a, b) => b.timestamp.compareTo(a.timestamp));
     } catch (_) {
       state = [];
     }
@@ -558,30 +560,35 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
 
   Map<String, dynamic> _parseAIData(String note) {
     try {
-      if (note.contains('{') && note.contains('}')) {
-        final jsonString = note.substring(note.indexOf('{'), note.lastIndexOf('}') + 1);
-        // Simple parsing - untuk implementasi lengkap gunakan jsonDecode
-        return {
-          'ppgMean': 0.75,
-          'ppgVariance': 0.12,
-          'activityMean': 1.2,
-          'activityVariance': 0.3,
-          'screeningScore': 70.0,
-          'aiConfidence': 0.85,
-          'recommendations': [
-            'Practice deep breathing for 5 minutes daily',
-            'Take regular breaks during work',
-            'Consider mindfulness meditation'
-          ],
-          'vitalSigns': {
-            'stress_level': 'Medium',
-            'recovery_index': 'Good',
-            'mental_fatigue': 'Low'
-          }
-        };
+      if (note.startsWith('AI_Result:')) {
+        // Extract the JSON part
+        final jsonStart = note.indexOf('{');
+        final jsonEnd = note.lastIndexOf('}');
+
+        if (jsonStart != -1 && jsonEnd != -1 && jsonEnd > jsonStart) {
+          final jsonStr = note.substring(jsonStart, jsonEnd + 1);
+
+          // Parse menggunakan jsonDecode (tambahkan import: import 'dart:convert';)
+          final Map<String, dynamic> data = json.decode(jsonStr);
+
+          return {
+            'ppgMean': (data['ppgMean'] as num?)?.toDouble() ?? 0.0,
+            'ppgVariance': (data['ppgVariance'] as num?)?.toDouble() ?? 0.0,
+            'activityMean': (data['activityMean'] as num?)?.toDouble() ?? 0.0,
+            'activityVariance':
+                (data['activityVariance'] as num?)?.toDouble() ?? 0.0,
+            'screeningScore':
+                (data['screeningScore'] as num?)?.toDouble() ?? 0.0,
+            'aiConfidence': (data['aiConfidence'] as num?)?.toDouble() ?? 0.0,
+            'recommendations': List<String>.from(data['recommendations'] ?? []),
+            'vitalSigns': Map<String, dynamic>.from(data['vitalSigns'] ?? {}),
+            'description': data['description'] ?? 'AI Assessment Result',
+          };
+        }
       }
     } catch (e) {
       print('Error parsing AI data: $e');
+      print('Note content: $note');
     }
     return {};
   }
@@ -599,7 +606,6 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
     List<String> recommendations = const [],
     Map<String, dynamic> vitalSigns = const {},
   }) async {
-    
     final aiData = {
       'ppgMean': ppgMean,
       'ppgVariance': ppgVariance,
@@ -610,15 +616,19 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
       'recommendations': recommendations,
       'vitalSigns': vitalSigns,
       'description': description,
+      'timestamp': DateTime.now().toIso8601String(),
     };
+
+    // Convert to JSON string
+    final aiDataJson = json.encode(aiData);
 
     await _repo.addRecord(
       score: score,
       riskLevel: riskLevel,
-      note: 'AI_Result: ${DateTime.now().millisecondsSinceEpoch} - $aiData',
+      note: 'AI_Result:$aiDataJson',
       testType: 'ai',
     );
-    
+
     await _loadFromRepo();
   }
 
@@ -763,7 +773,14 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
       ),
       headerDecoration: pw.BoxDecoration(color: PdfColor.fromHex("#8A84FF")),
       cellStyle: const pw.TextStyle(fontSize: 10),
-      headers: ['No', 'Date', 'Score', 'Risk Level', 'AI Confidence', 'Sensors Used'],
+      headers: [
+        'No',
+        'Date',
+        'Score',
+        'Risk Level',
+        'AI Confidence',
+        'Sensors Used',
+      ],
       data: state.asMap().entries.map((entry) {
         final index = entry.key + 1;
         final result = entry.value;
@@ -850,7 +867,9 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
     if (state.isEmpty) return '';
 
     final csv = StringBuffer();
-    csv.writeln('ID,Date,Time,Score,Risk Level,AI Confidence,PPG Mean,PPG Variance,Activity Mean,Activity Variance,Screening Score,Description');
+    csv.writeln(
+      'ID,Date,Time,Score,Risk Level,AI Confidence,PPG Mean,PPG Variance,Activity Mean,Activity Variance,Screening Score,Description',
+    );
 
     for (final result in state) {
       csv.write('${result.id ?? ""},');
@@ -916,21 +935,24 @@ final allHistoryProvider = Provider<List<MentalResult>>((ref) {
   final psikologi = ref.watch(psikologiHistoryProvider);
   final mental = ref.watch(mentalHistoryProvider);
   final ai = ref.watch(aiHistoryProvider);
-  
+
   // Convert AIResult to MentalResult untuk compatibility
-  final aiAsMental = ai.map((a) => MentalResult(
-    id: a.id,
-    score: a.score,
-    riskLevel: a.riskLevel,
-    description: a.description,
-    timestamp: a.timestamp,
-    testType: 'ai',
-  )).toList();
-  
+  final aiAsMental = ai
+      .map(
+        (a) => MentalResult(
+          id: a.id,
+          score: a.score,
+          riskLevel: a.riskLevel,
+          description: a.description,
+          timestamp: a.timestamp,
+          testType: 'ai',
+        ),
+      )
+      .toList();
+
   return [...psikologi, ...mental, ...aiAsMental]
     ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 });
-
 
 final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
   return HistoryRepository();
@@ -968,16 +990,24 @@ final historyListProvider = FutureProvider<List<ScreeningRecord>>((ref) async {
 });
 
 // Dashboard statistics provider
+// Dashboard statistics provider - PERBAIKI dengan type safety
 final dashboardStatsProvider = Provider<Map<String, dynamic>>((ref) {
   final psikologi = ref.watch(psikologiHistoryProvider);
   final mental = ref.watch(mentalHistoryProvider);
+  final ai = ref.watch(aiHistoryProvider);
   
-  final totalTests = psikologi.length + mental.length;
+  final totalTests = psikologi.length + mental.length + ai.length;
   
+  // Hitung average scores dengan benar
   final avgPsikologiScore = psikologi.isEmpty ? 0 : 
       psikologi.map((e) => e.score).reduce((a, b) => a + b) / psikologi.length;
+  
   final avgMentalScore = mental.isEmpty ? 0 : 
       mental.map((e) => e.score).reduce((a, b) => a + b) / mental.length;
+  
+  // Untuk AI, gunakan score yang sudah ada (tidak perlu konversi)
+  final avgAIScore = ai.isEmpty ? 0 : 
+      ai.map((e) => e.score).reduce((a, b) => a + b) / ai.length;
   
   final riskDistribution = {
     'Low': 0,
@@ -985,24 +1015,60 @@ final dashboardStatsProvider = Provider<Map<String, dynamic>>((ref) {
     'High': 0,
   };
   
-  for (final result in [...psikologi, ...mental]) {
-    final risk = result.riskLevel.toLowerCase();
-    if (risk.contains('low')) {
-      riskDistribution['Low'] = riskDistribution['Low']! + 1;
-    } else if (risk.contains('medium')) {
-      riskDistribution['Medium'] = riskDistribution['Medium']! + 1;
-    } else if (risk.contains('high')) {
-      riskDistribution['High'] = riskDistribution['High']! + 1;
+  // Hitung risk distribution untuk semua jenis test
+  void countRisk(List<dynamic> results) {
+    for (final result in results) {
+      if (result is MentalResult || result is AIResult) {
+        String riskLevel = result.riskLevel;
+        final risk = riskLevel.toLowerCase();
+        
+        if (risk.contains('low')) {
+          riskDistribution['Low'] = riskDistribution['Low']! + 1;
+        } else if (risk.contains('medium') || risk.contains('moderate')) {
+          riskDistribution['Medium'] = riskDistribution['Medium']! + 1;
+        } else if (risk.contains('high')) {
+          riskDistribution['High'] = riskDistribution['High']! + 1;
+        }
+      }
     }
   }
+  
+  countRisk(psikologi);
+  countRisk(mental);
+  countRisk(ai);
+  
+  // Hitung trend (improvement terakhir)
+  double calculateImprovement(List<dynamic> results) {
+    if (results.length < 2) return 0.0;
+    
+    final sorted = List<dynamic>.from(results)
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    
+    final firstScore = sorted.first.score;
+    final lastScore = sorted.last.score;
+    
+    return lastScore - firstScore;
+  }
+  
+  final allResults = <dynamic>[...psikologi, ...mental, ...ai];
   
   return {
     'totalTests': totalTests,
     'psikologiCount': psikologi.length,
     'mentalCount': mental.length,
+    'aiCount': ai.length,
     'avgPsikologiScore': avgPsikologiScore,
     'avgMentalScore': avgMentalScore,
+    'avgAIScore': avgAIScore,
+    'avgOverallScore': totalTests == 0 ? 0 : 
+        (avgPsikologiScore * psikologi.length + 
+         avgMentalScore * mental.length + 
+         avgAIScore * ai.length) / totalTests,
     'riskDistribution': riskDistribution,
+    'improvementTrend': calculateImprovement(allResults),
     'lastUpdated': DateTime.now(),
+    'recentTests': allResults
+        .where((r) => r.timestamp.isAfter(DateTime.now().subtract(Duration(days: 7))))
+        .length,
   };
 });

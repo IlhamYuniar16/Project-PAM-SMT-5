@@ -31,6 +31,7 @@ dependencies:
   file_picker: ^10.3.8
   fl_chart: ^1.1.1
   percent_indicator: ^4.2.5
+  iconsax: ^0.0.8
   # google_generative_ai:
 
 dev_dependencies:
