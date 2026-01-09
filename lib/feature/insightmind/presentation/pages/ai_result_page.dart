@@ -202,7 +202,7 @@ class AIResultPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                     Row(
                         children: [
                           Icon(
                             Icons.analytics_outlined,

@@ -1,19 +1,24 @@
-// WEEK6 + WEEK7: Integrasi Sensor → FeatureVector → AI
 import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_project_pam/feature/insightmind/presentation/pages/history_detail_page.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/providers/ai_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
-
 import 'package:flutter_project_pam/feature/insightmind/data/models/feature_vector.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../providers/sensors_provider.dart';
 import '../providers/ppg_provider.dart';
 import '../providers/score_provider.dart';
 import 'ai_result_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../providers/history_providers.dart';
-import '../../domain/entities/ai_result.dart';
+
+const Color kPrimaryColor = Color(0xFF6C63FF);
+const Color kSecondaryColor = Color(0xFFF5F5FF);
+const Color kSuccessColor = Color(0xFF4CAF50);
+const Color kWarningColor = Color(0xFFFF9800);
+const Color kDangerColor = Color(0xFFF44336);
+const Color kBackgroundColor = Color(0xFFF8F9FF);
 
 class BiometricPage extends ConsumerWidget {
   const BiometricPage({super.key});
@@ -30,9 +35,9 @@ class BiometricPage extends ConsumerWidget {
           SnackBar(
             content: Text(ppg.errorMessage!),
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
+            duration: const Duration(seconds: 3),
             action: SnackBarAction(
-              label: 'Clear',
+              label: 'Hapus',
               textColor: Colors.white,
               onPressed: () {
                 ref.read(ppgProvider.notifier).clearError();
@@ -44,107 +49,136 @@ class BiometricPage extends ConsumerWidget {
     });
 
     return Scaffold(
+      backgroundColor: kBackgroundColor,
       appBar: AppBar(
-        title: Text("Sensor & AI", style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xFF8A84FF),
+        title: Text(
+          "Analisis Biometrik & AI",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 18.sp,
+          ),
+        ),
+        backgroundColor: kMainBackgroundColor,
         foregroundColor: Colors.white,
+        elevation: 0,
+        // shape: RoundedRectangleBorder(
+        //   borderRadius: BorderRadius.only(
+        //     bottomLeft: Radius.circular(20.r),
+        //     bottomRight: Radius.circular(20.r),
+        //   ),
+        // ),
       ),
-      body: ListView(
-        // padding: const EdgeInsets.all(24),
-        children: [
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(20.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            
+            SizedBox(height: 10.h),
 
-          // Card(
-          //   shape: RoundedRectangleBorder(
-          //     borderRadius: BorderRadius.circular(16),
-          //   ),
-          //   elevation: 3,
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(20),
-          //     child: Column(
-          //       crossAxisAlignment: CrossAxisAlignment.start,
-          //       children: [
-          //         const Text(
-          //           "Fitur Accelerometer",
-          //           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          //         ),
-          //         const SizedBox(height: 8),
-          //         Text("Mean: ${accelFeat.mean.toStringAsFixed(4)}"),
-          //         Text("Variance: ${accelFeat.variance.toStringAsFixed(4)}"),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-
-          const SizedBox(height: 24),
-
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
+            Container(
+              padding: EdgeInsets.all(20.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "Fitur PPG via Kamera",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(8.w),
+                            decoration: BoxDecoration(
+                              color: kPrimaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: Icon(
+                              Icons.monitor_heart,
+                              color: kPrimaryColor,
+                              size: 24.sp,
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Monitor PPG",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              Text(
+                                "Deteksi denyut nadi berbasis kamera",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12.sp,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-
-                      // TOMBOL SWITCH CAMERA
                       if (ppg.capturing)
-                        IconButton(
-                          icon: Icon(
-                            ppg.isFrontCamera
-                                ? Icons.camera_rear
-                                : Icons.camera_front,
-                            color: Colors.white,
+                        Container(
+                          decoration: BoxDecoration(
+                            color: kPrimaryColor,
+                            borderRadius: BorderRadius.circular(12.r),
                           ),
-                          style: IconButton.styleFrom(
-                            backgroundColor: Color(0xFF8A84FF),
+                          child: IconButton(
+                            icon: Icon(
+                              ppg.isFrontCamera
+                                  ? Icons.camera_rear
+                                  : Icons.camera_front,
+                              color: Colors.white,
+                              size: 20.sp,
+                            ),
+                            onPressed: () {
+                              ref.read(ppgProvider.notifier).switchCamera();
+                            },
+                            tooltip: ppg.isFrontCamera 
+                                ? "Ganti ke Kamera Belakang" 
+                                : "Ganti ke Kamera Depan",
                           ),
-                          onPressed: () {
-                            ref.read(ppgProvider.notifier).switchCamera();
-                          },
-                          tooltip: ppg.isFrontCamera
-                              ? "Switch to Back Camera"
-                              : "Switch to Front Camera",
                         ),
                     ],
                   ),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: 20.h),
 
-                  // ERROR INDICATOR
                   if (ppg.errorMessage != null && ppg.errorMessage!.isNotEmpty)
                     Container(
-                      padding: EdgeInsets.all(12),
+                      padding: EdgeInsets.all(16.w),
                       decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red.shade200),
+                        color: kDangerColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: kDangerColor.withOpacity(0.2)),
                       ),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.error_outline,
-                            color: Colors.red,
-                            size: 20,
-                          ),
-                          SizedBox(width: 8),
+                          Icon(Icons.error_outline, color: kDangerColor, size: 22.sp),
+                          SizedBox(width: 12.w),
                           Expanded(
                             child: Text(
-                              "Camera Error",
-                              style: TextStyle(
-                                color: Colors.red.shade800,
-                                fontWeight: FontWeight.bold,
+                              "Kesalahan Kamera: ${ppg.errorMessage}",
+                              style: GoogleFonts.poppins(
+                                color: kDangerColor,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
@@ -152,72 +186,47 @@ class BiometricPage extends ConsumerWidget {
                       ),
                     ),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: 20.h),
 
-                  // CAMERA PREVIEW
-                  if (ppg.capturing && ppg.controller != null)
-                    Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 350.h,
+                  Container(
+                    height: 200.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: ppg.capturing && ppg.controller != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(16.r),
                             child: Stack(
                               children: [
                                 CameraPreview(ppg.controller!),
-
-                                // OVERLAY UNTUK INDIKATOR KAMERA
                                 Positioned(
-                                  top: 12,
-                                  right: 12,
+                                  top: 12.w,
+                                  right: 12.w,
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
+                                      horizontal: 12.w,
+                                      vertical: 6.h,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.black54,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      ppg.isFrontCamera ? "FRONT" : "BACK",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                // LIVE INDICATOR
-                                Positioned(
-                                  bottom: 12,
-                                  left: 12,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green.shade800,
-                                      borderRadius: BorderRadius.circular(12),
+                                      color: Colors.black.withOpacity(0.6),
+                                      borderRadius: BorderRadius.circular(20.r),
                                     ),
                                     child: Row(
                                       children: [
                                         Icon(
                                           Icons.circle,
-                                          size: 8,
-                                          color: Colors.white,
+                                          color: Colors.green,
+                                          size: 8.sp,
                                         ),
-                                        SizedBox(width: 4),
+                                        SizedBox(width: 6.w),
                                         Text(
-                                          "LIVE",
-                                          style: TextStyle(
+                                          ppg.isFrontCamera ? "KAMERA DEPAN" : "KAMERA BELAKANG",
+                                          style: GoogleFonts.poppins(
                                             color: Colors.white,
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
+                                            fontSize: 11.sp,
+                                            fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                       ],
@@ -226,143 +235,93 @@ class BiometricPage extends ConsumerWidget {
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-
-                        // INDIKATOR TULISAN
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            ppg.isFrontCamera
-                                ? "📱 Menggunakan Kamera Depan"
-                                : "📱 Menggunakan Kamera Belakang",
-                            style: TextStyle(
-                              color: Colors.grey[700],
-                              fontSize: 14,
+                          )
+                        : Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.camera_alt_outlined,
+                                  size: 48.sp,
+                                  color: Colors.grey[400],
+                                ),
+                                SizedBox(height: 12.h),
+                                Text(
+                                  "Pratinjau Kamera",
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.grey[500],
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                                SizedBox(height: 4.h),
+                                Text(
+                                  "Tekan 'Mulai Pengambilan' untuk memulai",
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.grey[400],
+                                    fontSize: 12.sp,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    )
-                  else
-                    Container(
-                      height: 350.h,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            ppg.errorMessage != null
-                                ? Icons
-                                      .videocam_off // Icon yang valid
-                                : Icons.camera_alt,
-                            size: 48,
-                            color: ppg.errorMessage != null
-                                ? Colors.red
-                                : Colors.grey,
-                          ),
-                          SizedBox(height: 12),
-                          Text(
-                            ppg.errorMessage != null
-                                ? "Camera Error"
-                                : "Kamera siap digunakan",
-                            style: TextStyle(
-                              color: ppg.errorMessage != null
-                                  ? Colors.red
-                                  : Colors.black54,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            ppg.errorMessage != null
-                                ? "Tap start to retry"
-                                : "Default: Kamera Belakang",
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                  const SizedBox(height: 16),
-
-                  // CAMERA INFO
-                  Row(
-                    children: [
-                      Icon(
-                        ppg.isFrontCamera
-                            ? Icons.camera_front
-                            : Icons.camera_rear,
-                        size: 16,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        "Camera: ${ppg.isFrontCamera ? "Front" : "Back"}",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      Spacer(),
-                      Text(
-                        "Samples: ${ppg.samples.length}",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ],
                   ),
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: 20.h),
 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  Container(
+                    padding: EdgeInsets.all(16.w),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              "Mean Y: ${ppg.mean.toStringAsFixed(6)}",
-                              style: TextStyle(fontSize: 12),
+                            _buildMetricTile(
+                              icon: Icons.timeline,
+                              title: "Rata-rata PPG",
+                              value: "${ppg.mean.toStringAsFixed(4)}",
+                              color: kPrimaryColor,
                             ),
-                            Text(
-                              "Variance Y: ${ppg.variance.toStringAsFixed(6)}",
-                              style: TextStyle(fontSize: 12),
+                            _buildMetricTile(
+                              icon: Icons.auto_graph,
+                              title: "Varians PPG",
+                              value: "${ppg.variance.toStringAsFixed(4)}",
+                              color: kWarningColor,
                             ),
                           ],
                         ),
-                      ),
-                      if (ppg.samples.isNotEmpty)
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF8A84FF).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: Color(0xFF8A84FF).withOpacity(0.3),
+                        SizedBox(height: 12.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildMetricTile(
+                              icon: Icons.insights,
+                              title: "Sampel",
+                              value: "${ppg.samples.length}",
+                              color: kSuccessColor,
+                              suffix: "/300",
                             ),
-                          ),
-                          child: Text(
-                            "${ppg.samples.length}/300",
-                            style: TextStyle(
-                              color: Color(0xFF8A84FF),
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                            // _buildMetricTile(
+                            //   icon: Icons.speed,
+                            //   title: "Status",
+                            //   value: ppg.capturing ? "Aktif" : "Siap",
+                            //   color: ppg.capturing ? Colors.green : Colors.grey,
+                            // ),
+                          ],
                         ),
-                    ],
+                      ],
+                    ),
                   ),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: 20.h),
 
-                  // TOMBOL START/STOP
                   Row(
                     children: [
                       Expanded(
-                        child: FilledButton.icon(
+                        child: ElevatedButton(
                           onPressed: () {
                             final notifier = ref.read(ppgProvider.notifier);
                             if (ppg.capturing) {
@@ -371,30 +330,54 @@ class BiometricPage extends ConsumerWidget {
                               notifier.startCapture();
                             }
                           },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                              Color(0xFF8A84FF),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: ppg.capturing ? Colors.red : kMainBackgroundColor,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.r),
                             ),
+                            elevation: 2,
                           ),
-                          icon: Icon(
-                            ppg.capturing ? Icons.stop : Icons.play_arrow,
-                          ),
-                          label: Text(
-                            ppg.capturing ? "Stop Capture" : "Start Capture",
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                ppg.capturing ? Icons.stop_circle : Icons.play_circle_fill,
+                                size: 20.sp,
+                              ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                ppg.capturing ? "Hentikan Pengambilan" : "Mulai Pengambilan",
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15.sp,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-
-                      // TOMBOL CLEAR DATA
                       if (ppg.samples.isNotEmpty)
                         Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: IconButton(
-                            icon: Icon(Icons.delete_outline),
-                            onPressed: () {
-                              ref.read(ppgProvider.notifier).clearSamples();
-                            },
-                            tooltip: "Clear samples data",
+                          padding: EdgeInsets.only(left: 12.w),
+                          child: SizedBox(
+                            height: 48.h,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                ref.read(ppgProvider.notifier).clearSamples();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.red,
+                                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  side: BorderSide(color: Colors.red),
+                                ),
+                              ),
+                              child: Icon(Icons.delete_outline, size: 22.sp),
+                            ),
                           ),
                         ),
                     ],
@@ -402,102 +385,334 @@ class BiometricPage extends ConsumerWidget {
                 ],
               ),
             ),
-          ),
 
-          const SizedBox(height: 32),
+            SizedBox(height: 24.h),
 
-          // ================= AI PREDICTION =================
-          FilledButton.icon(
-            icon: const Icon(Icons.insights),
-            label: const Text("Hitung Prediksi AI"),
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Color(0xFF8A84FF)),
+            Container(
+              padding: EdgeInsets.all(20.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(8.w),
+                        decoration: BoxDecoration(
+                          color: Colors.deepPurple.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Icon(
+                          Icons.auto_awesome,
+                          color: Colors.deepPurple,
+                          size: 24.sp,
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Analisis AI",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              "Hasilkan prediksi kesehatan mental",
+                              style: GoogleFonts.poppins(
+                                fontSize: 12.sp,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 20.h),
+
+                  Container(
+                    padding: EdgeInsets.all(16.w),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildAIMetric(
+                          title: "Data Aktivitas",
+                          mean: accelFeat.mean,
+                          variance: accelFeat.variance,
+                          color: Colors.blue,
+                        ),
+                        Container(
+                          height: 40.h,
+                          width: 1,
+                          color: Colors.grey[300],
+                        ),
+                        const SizedBox(width: 15,),
+                        _buildAIMetric(
+                          title: "Data PPG",
+                          mean: ppg.mean,
+                          variance: ppg.variance,
+                          color: Colors.green,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 20.h),
+
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (ppg.samples.length < 30) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Harap kumpulkan minimal 30 sampel PPG terlebih dahulu"),
+                            backgroundColor: Colors.orange,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+
+                      final random = Random();
+                      final variedScore = score + (random.nextDouble() * 40 - 20).round();
+                      final finalScore = variedScore.clamp(0, 100).toDouble();
+                      final variedPPGMean = ppg.mean + (random.nextDouble() * 20 - 10);
+                      final variedPPGVar = ppg.variance + (random.nextDouble() * 0.5 - 0.25);
+                      final variedActivityMean = accelFeat.mean + (random.nextDouble() * 0.5 - 0.25);
+                      final variedActivityVar = accelFeat.variance + (random.nextDouble() * 0.2 - 0.1);
+
+                      final fv = FeatureVector(
+                        screeningScore: finalScore,
+                        activityMean: variedActivityMean.clamp(0.0, 5.0),
+                        activityVar: variedActivityVar.clamp(0.0, 2.0),
+                        ppgMean: variedPPGMean.clamp(0.0, 255.0),
+                        ppgVar: variedPPGVar.clamp(0.0, 50.0),
+                      );
+
+                      final aiPredictor = ref.read(aiPredictorProvider);
+                      final aiResult = aiPredictor.predict(fv);
+
+                      await ref.read(aiHistoryProvider.notifier).addAIResult(
+                        score: aiResult['score'] ?? 0,
+                        riskLevel: aiResult['riskLevel'] ?? 'Sedang',
+                        description: aiResult['description'] ?? 'Hasil Penilaian AI',
+                        ppgMean: fv.ppgMean,
+                        ppgVariance: fv.ppgVar,
+                        activityMean: fv.activityMean,
+                        activityVariance: fv.activityVar,
+                        screeningScore: fv.screeningScore,
+                        aiConfidence: (aiResult['confidence'] as num?)?.toDouble() ?? 0.85,
+                        recommendations: List<String>.from(
+                          aiResult['recommendations'] ?? [],
+                        ),
+                        vitalSigns: Map<String, dynamic>.from(
+                          aiResult['vitalSigns'] ?? {},
+                        ),
+                      );
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AIResultPage(fv: fv, aiResult: aiResult),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kMainBackgroundColor,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 18.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      elevation: 3,
+                      minimumSize: Size(double.infinity, 56.h),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.psychology, size: 24.sp),
+                        SizedBox(width: 12.w),
+                        Text(
+                          "Hasilkan Prediksi AI",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  SizedBox(height: 12.h),
+                  
+                  Text(
+                    "Catatan: AI akan menganalisis data biometrik Anda untuk memberikan penilaian kesehatan mental",
+                    style: GoogleFonts.poppins(
+                      fontSize: 12.sp,
+                      color: Colors.grey[600],
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            // Di dalam onPressed untuk "Hitung Prediksi AI":
-            // Di dalam onPressed untuk "Hitung Prediksi AI":
-// Di dalam onPressed untuk "Hitung Prediksi AI":
-onPressed: () async {
-  if (ppg.samples.length < 30) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Ambil minimal 30 sampel PPG dahulu"),
+
+            SizedBox(height: 30.h),
+          ],
+        ),
       ),
     );
-    return;
   }
 
-  // ========== SIMULASI DATA YANG BERBEDA-BEDA ==========
-  final random = Random();
-  
-  // 1. Screening Score (0-100) - Buat variasi
-  final variedScore = score + (random.nextDouble() * 40 - 20).round();
-  final finalScore = variedScore.clamp(0, 100).toDouble();
-  
-  // 2. PPG Data - Tambahkan variasi alami
-  final variedPPGMean = ppg.mean + (random.nextDouble() * 20 - 10);
-  final variedPPGVar = ppg.variance + (random.nextDouble() * 0.5 - 0.25);
-  
-  // 3. Activity Data - Tambahkan variasi
-  final variedActivityMean = accelFeat.mean + (random.nextDouble() * 0.5 - 0.25);
-  final variedActivityVar = accelFeat.variance + (random.nextDouble() * 0.2 - 0.1);
-  
-  // Pastikan nilai dalam range yang wajar
-  final fv = FeatureVector(
-    screeningScore: finalScore,
-    activityMean: variedActivityMean.clamp(0.0, 5.0),
-    activityVar: variedActivityVar.clamp(0.0, 2.0),
-    ppgMean: variedPPGMean.clamp(0.0, 255.0),
-    ppgVar: variedPPGVar.clamp(0.0, 50.0),
-  );
-
-  // Debug: Tampilkan nilai feature vector
-  print('Feature Vector:');
-  print('- Screening Score: ${fv.screeningScore}');
-  print('- PPG Mean: ${fv.ppgMean}, Variance: ${fv.ppgVar}');
-  print('- Activity Mean: ${fv.activityMean}, Variance: ${fv.activityVar}');
-
-  // Panggil AI predictor
-  final aiPredictor = ref.read(aiPredictorProvider);
-  final aiResult = aiPredictor.predict(fv);
-  
-  // Debug: Tampilkan hasil
-  print('AI Result:');
-  print('- Score: ${aiResult['score']}');
-  print('- Risk Level: ${aiResult['riskLevel']}');
-  print('- Confidence: ${aiResult['confidence']}');
-
-  // Save ke history
-  await ref
-      .read(aiHistoryProvider.notifier)
-      .addAIResult(
-        score: aiResult['score'] ?? 0,
-        riskLevel: aiResult['riskLevel'] ?? 'Medium',
-        description: aiResult['description'] ?? 'AI Assessment Result',
-        ppgMean: fv.ppgMean,
-        ppgVariance: fv.ppgVar,
-        activityMean: fv.activityMean,
-        activityVariance: fv.activityVar,
-        screeningScore: fv.screeningScore,
-        aiConfidence: (aiResult['confidence'] as num?)?.toDouble() ?? 0.85,
-        recommendations: List<String>.from(
-          aiResult['recommendations'] ?? [],
+  Widget _buildMetricTile({
+    required IconData icon,
+    required String title,
+    required String value,
+    required Color color,
+    String suffix = '',
+  }) {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.all(12.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(color: Colors.grey[200]!),
         ),
-        vitalSigns: Map<String, dynamic>.from(
-          aiResult['vitalSigns'] ?? {},
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, size: 16.sp, color: color),
+                SizedBox(width: 6.w),
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12.sp,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 6.h),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: value,
+                    style: GoogleFonts.poppins(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  if (suffix.isNotEmpty)
+                    TextSpan(
+                      text: suffix,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
-      );
-
-  // Navigate ke result page
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => AIResultPage(
-        fv: fv,
-        aiResult: aiResult,
       ),
-    ),
-  );
-},
+    );
+  }
+
+  Widget _buildAIMetric({
+    required String title,
+    required double mean,
+    required double variance,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Rata-rata",
+                      style: GoogleFonts.poppins(
+                        fontSize: 11.sp,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    Text(
+                      mean.toStringAsFixed(4),
+                      style: GoogleFonts.poppins(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Varians",
+                      style: GoogleFonts.poppins(
+                        fontSize: 11.sp,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    Text(
+                      variance.toStringAsFixed(4),
+                      style: GoogleFonts.poppins(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

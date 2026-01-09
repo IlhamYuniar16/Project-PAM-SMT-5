@@ -49,7 +49,7 @@ class HomePage extends ConsumerWidget {
               backgroundColor: MaterialStateProperty.all(Color(0xFF8A84FF)),
               elevation: MaterialStateProperty.all(0)
             ),
-            icon: Icon(Icons.insights, size: 30, color: Colors.white,),
+            icon: Icon(Icons.auto_awesome, size: 30, color: Colors.white,),
             label: const Text("Bot SoulScan", style: TextStyle(color: Colors.white))
             )
           ],

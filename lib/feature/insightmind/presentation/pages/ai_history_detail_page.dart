@@ -191,7 +191,7 @@ class AIHistoryDetailPage extends StatelessWidget {
                           ),
                           SizedBox(height: 4.h),
                           Text(
-                            'Based on psychological assessment: ${result.screeningScore.toStringAsFixed(1)}',
+                            'Score Screening: ${result.screeningScore.toStringAsFixed(1)}',
                             style: GoogleFonts.poppins(
                               fontSize: 12.sp,
                               color: Colors.grey.shade600,
@@ -207,38 +207,38 @@ class AIHistoryDetailPage extends StatelessWidget {
 
             SizedBox(height: 20.h),
 
-            // Description
-            if (result.description.isNotEmpty)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Assessment Summary',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(16.w),
-                      child: Text(
-                        result.description,
-                        style: GoogleFonts.poppins(
-                          fontSize: 14.sp,
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            // // Description
+            // if (result.description.isNotEmpty)
+            //   Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Text(
+            //         'Assessment Summary',
+            //         style: GoogleFonts.poppins(
+            //           fontSize: 18.sp,
+            //           fontWeight: FontWeight.bold,
+            //           color: Colors.black,
+            //         ),
+            //       ),
+            //       SizedBox(height: 12.h),
+            //       Card(
+            //         elevation: 3,
+            //         shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(12.r),
+            //         ),
+            //         child: Padding(
+            //           padding: EdgeInsets.all(16.w),
+            //           child: Text(
+            //             result.description,
+            //             style: GoogleFonts.poppins(
+            //               fontSize: 14.sp,
+            //               color: Colors.grey.shade800,
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
 
             SizedBox(height: 20.h),
           ],
