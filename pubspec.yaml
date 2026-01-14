@@ -57,5 +57,6 @@ flutter:
     - assets/img/logoMasalah.png
     - assets/img/logoOtak.png
     - assets/img/logoMental.png
+    - assets/img/heart.png
     - assets/icons/logonotext.png
     - assets/.env
