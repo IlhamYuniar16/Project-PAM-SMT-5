@@ -16,7 +16,7 @@ git clone https://github.com/IlhamYuniar16/Project-PAM-SMT-5.git
 flutter pub get
 ```
 
-## Install Handphone
+## Run Handphone
 ```bash 
 dart run flutter_launcher_icons
 ```
