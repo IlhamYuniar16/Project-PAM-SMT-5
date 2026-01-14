@@ -21,7 +21,7 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Color(0xFF8A84FF),
+        backgroundColor: const Color(0xFF8A84FF),
         title: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -49,7 +49,7 @@ class HomePage extends ConsumerWidget {
               backgroundColor: MaterialStateProperty.all(Color(0xFF8A84FF)),
               elevation: MaterialStateProperty.all(0)
             ),
-            icon: Icon(Icons.auto_awesome, size: 30, color: Colors.white,),
+            icon: const Icon(Icons.auto_awesome, size: 30, color: Colors.white,),
             label: const Text("Bot SoulScan", style: TextStyle(color: Colors.white))
             )
           ],
@@ -62,7 +62,7 @@ class HomePage extends ConsumerWidget {
             Container(
               width: double.infinity,
               height: double.infinity,
-              color: Color(0xFF8A84FF),
+              color: const Color(0xFF8A84FF),
               child: Padding(
                 padding: EdgeInsets.only(left: 30.w),
                 child: Column(
@@ -104,7 +104,7 @@ class HomePage extends ConsumerWidget {
               child: Container(
                 height: 600.h,
                 decoration: BoxDecoration(
-                  color: Color(0xFFC7C3FF),
+                  color: const Color(0xFFC7C3FF),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20.r),
                     topRight: Radius.circular(20.r),
@@ -166,8 +166,6 @@ class HomePage extends ConsumerWidget {
                                       child: Row(
                                         children: [
                                           Container(
-                                            // width: 50.w,
-                                            // color: Color(0xFFFFB7C5),
                                             child: Padding(
                                               padding: EdgeInsets.all(20.w),
                                               child: Row(
@@ -255,7 +253,6 @@ class HomePage extends ConsumerWidget {
                                       child: Row(
                                         children: [
                                           Container(
-                                            // color: Color(0xFFA8E6CF),
                                             child: Padding(
                                               padding: EdgeInsets.all(20.w),
                                               child: Row(
@@ -437,7 +434,6 @@ class HomePage extends ConsumerWidget {
                                                       MaterialStateProperty.all(
                                                         EdgeInsets.symmetric(
                                                           horizontal: 30.w,
-                                                          // vertical: 2.h,
                                                         ),
                                                       ),
                                                 ),
@@ -545,13 +541,11 @@ class HomePage extends ConsumerWidget {
         color: const Color(0xFFF1F4FF),
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
-          // Bayangan kiri
           BoxShadow(
             color: Colors.white.withOpacity(0.9),
             offset: const Offset(-6, -6),
             blurRadius: 12,
           ),
-          // Bayangan kanan
           BoxShadow(
             color: Colors.black.withOpacity(0.15),
             offset: const Offset(6, 6),
@@ -563,7 +557,6 @@ class HomePage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Ikon bulat timbul
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
@@ -605,7 +598,6 @@ class HomePage extends ConsumerWidget {
 
           const SizedBox(height: 20),
 
-          // BUTTON lembut
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue.shade600,

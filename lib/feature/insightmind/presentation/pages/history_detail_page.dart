@@ -117,8 +117,7 @@ class HistoryDetailPage extends StatelessWidget {
             ],
           ),
           SizedBox(height: 20.h),
-          
-          // Score Progress
+
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

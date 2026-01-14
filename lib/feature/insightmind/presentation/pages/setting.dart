@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/pages/dashboard_page.dart';
+import 'package:flutter_project_pam/feature/insightmind/presentation/pages/penilaian.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -267,6 +268,40 @@ class _SettingState extends State<Setting> {
                                       ),
                                     ),
                                     if (openGaris) Divider(color: Colors.black),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          Navigator.push(context, MaterialPageRoute(builder: (_) => penilaian()));
+                                        });
+                                      },
+                                      style: ButtonStyle(
+                                        elevation: MaterialStateProperty.all(0),
+                                        backgroundColor: MaterialStateProperty.all(Colors.white),
+                                        shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(5.r))),
+                                        padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h))
+                                      ), 
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(FontAwesomeIcons.star, color: Colors.black,),
+                                              SizedBox(
+                                                width: 10.w,
+                                              ),
+                                          Text('Berikan Penilaian',
+                                          style: GoogleFonts.poppins(
+                                            textStyle: TextStyle(
+                                              color: Colors.black
+                                            )
+                                          ),)
+                                            ],
+                                          ),
+                                          Icon(FontAwesomeIcons.chevronRight, color: Colors.black,)
+                                        ],
+                                      )
+                                      ),
+                                      if (openGaris) Divider(color: Colors.black),
                                     ElevatedButton(
                                       onPressed: () {},
                                       style: ButtonStyle(
