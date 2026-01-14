@@ -106,43 +106,6 @@ class ScreeningPage extends ConsumerWidget {
           ),
         ],
       ),
-      // bottomNavigationBar: SafeArea(
-      //   minimum: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      //   child: Column(
-      //     mainAxisSize: MainAxisSize.min,
-      //     children: [
-      //       Center(
-      //         child: Text(
-      //           '${qState.answers.length} / ${questions.length} Pertanyaan Terisi',
-      //           style: const TextStyle(
-      //             fontWeight: FontWeight.bold,
-      //             fontSize: 16,
-      //           ),
-      //         ),
-      //       ),
-      //       const SizedBox(height: 12),
-
-      //       SizedBox(
-      //         width: double.infinity,
-      //         child: FilledButton(
-      //           onPressed: () {
-      //             if (!qState.isComplete) {
-      //               ScaffoldMessenger.of(context).showSnackBar(
-      //                 const SnackBar(
-      //                   content: Text('Lengkapi semua pertanyaan dulu.'),
-      //                 ),
-      //               );
-      //               return;
-      //             }
-
-      //             _showAnswersBeforeResult(context, ref, questions, qState);
-      //           },
-      //           child: const Text('Lihat Hasil'),
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
     );
   }
 
@@ -232,8 +195,6 @@ class ScreeningPage extends ConsumerWidget {
               ref.read(answersProvider.notifier).state = answersOrdered;
 
               final result = ref.read(resultProvider);
-
-              // Panggil addResultToHistory dengan parameter yang benar
               ref
                   .read(psikologiHistoryProvider.notifier)
                   .addResultToHistory(
@@ -241,7 +202,7 @@ class ScreeningPage extends ConsumerWidget {
                     riskLevel: result.riskLevel,
                     description: result.description,
                     notes: result
-                        .description, // atau tambahkan field notes di MentalResult
+                        .description, 
                   );
 
               Navigator.of(context).pop();

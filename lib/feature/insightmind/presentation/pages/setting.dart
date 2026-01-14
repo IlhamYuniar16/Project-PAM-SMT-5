@@ -164,52 +164,6 @@ class _SettingState extends State<Setting> {
                                         ],
                                       ),
                                     ),
-                                    // if (openGaris) Divider(color: Colors.black),
-                                    // ElevatedButton(
-                                    //   onPressed: () {},
-                                    //   style: ButtonStyle(
-                                    //     padding: MaterialStateProperty.all(
-                                    //       EdgeInsets.symmetric(horizontal: 5.w),
-                                    //     ),
-                                    //     elevation: MaterialStateProperty.all(0),
-                                    //     backgroundColor:
-                                    //         MaterialStateProperty.all(
-                                    //           Colors.white,
-                                    //         ),
-                                    //     shape: MaterialStateProperty.all(
-                                    //       RoundedRectangleBorder(
-                                    //         borderRadius:
-                                    //             BorderRadiusGeometry.circular(
-                                    //               5.r,
-                                    //             ),
-                                    //       ),
-                                    //     ),
-                                    //   ),
-                                    //   child: Row(
-                                    //     mainAxisAlignment:
-                                    //         MainAxisAlignment.spaceBetween,
-                                    //     children: [
-                                    //       Row(
-                                    //         children: [
-                                    //           // Icon(FontAwesomeIcons.font, color: Colors.black,),
-                                    //           // SizedBox(width: 10.w,),
-                                    //           // Text(
-                                    //           //   'Ukuran Font',
-                                    //           //   style: GoogleFonts.poppins(
-                                    //           //     textStyle: TextStyle(
-                                    //           //       color: Colors.black,
-                                    //           //     ),
-                                    //           //   ),
-                                    //           // ),
-                                    //         ],
-                                    //       ),
-                                    //       Icon(
-                                    //         FontAwesomeIcons.chevronRight,
-                                    //         color: Colors.black,
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
                                     if (openGaris) Divider(color: Colors.black),
                                     ElevatedButton(
                                       onPressed: () {
