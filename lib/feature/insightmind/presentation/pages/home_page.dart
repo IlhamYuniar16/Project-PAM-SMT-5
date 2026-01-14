@@ -58,9 +58,7 @@ class HomePage extends ConsumerWidget {
       body: Padding(
         padding: const EdgeInsets.all(0),
         child: Stack(
-          // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // const SizedBox(height: 24),
             Container(
               width: double.infinity,
               height: double.infinity,
@@ -504,7 +502,6 @@ class HomePage extends ConsumerWidget {
                                                       MaterialStateProperty.all(
                                                         EdgeInsets.symmetric(
                                                           horizontal: 30.w,
-                                                          // vertical: 2.h,
                                                         ),
                                                       ),
                                                 ),
@@ -524,67 +521,16 @@ class HomePage extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.center,
-                    //   children: [
-                    //     SizedBox(height: 100.h),
-                    //     Text('Content'),
-                    //   ],
-                    // ),
                   ],
                 ),
               ),
             ),
-            // SizedBox(
-            //   width: double.infinity,
-            //   child: FilledButton.icon(
-            //     icon: const Icon(Icons.psychology_alt),
-            //     label: const Text('Mulai Screening'),
-            //     style: FilledButton.styleFrom(
-            //       backgroundColor: Colors.indigo,
-            //       padding: const EdgeInsets.symmetric(vertical: 16),
-            //     ),
-            //     onPressed: () {
-            //       Navigator.push(
-            //         context,
-            //         MaterialPageRoute(builder: (_) => const ScreeningPage()),
-            //       );
-            //     },
-            //   ),
-            // ),
-
-            // const SizedBox(height: 32),
-            // const Divider(thickness: 1),
-
-            // const Text(
-            //   'Latihan Minggu 2 - Simulasi Jawaban',
-            //   style: TextStyle(fontWeight: FontWeight.bold),
-            // ),
-            // Wrap(
-            //   spacing: 8,
-            //   children: [
-            //     for (int i = 0; i < answers.length; i++)
-            //       Chip(label: Text('${answers[i]}')),
-            //   ],
-            // ),
           ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   backgroundColor: Colors.indigo,
-      //   foregroundColor: Colors.white,
-      //   onPressed: () {
-      //     // Tambah data dummy (latihan minggu 2)
-      //     final newValue = (DateTime.now().millisecondsSinceEpoch % 4).toInt();
-      //     final current = [...ref.read(answersProvider)];
-      //     current.add(newValue);
-      //     ref.read(answersProvider.notifier).state = current;
-      //   },
-      //   child: const Icon(Icons.add),
-      // ),
     );
   }
-  // 🔵 KOMPONEN CARD NEUMORPHISM
+
   Widget _buildSoftCard({
     required BuildContext context,
     required IconData icon,
