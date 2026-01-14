@@ -454,7 +454,7 @@ class HomePage extends ConsumerWidget {
                                       child: Row(
                                         children: [
                                           Image.asset(
-                                            'assets/img/logoMental.png',
+                                            'assets/img/ai.png', width: 70.w,
                                           ),
                                           SizedBox(width: 20.w),
                                           Column(
