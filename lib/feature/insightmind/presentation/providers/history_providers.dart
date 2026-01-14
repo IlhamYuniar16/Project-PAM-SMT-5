@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart'; 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -13,6 +14,20 @@ import '../../domain/entities/mental_result.dart';
 import '../../data/local/history_repository.dart';
 import '../../data/local/screening_record.dart';
 import '../../domain/entities/ai_result.dart';
+
+// ==================== CUSTOM EXCEPTION ====================
+
+class PlatformNotSupportedException implements Exception {
+  final String featureName;
+  
+  PlatformNotSupportedException(this.featureName);
+  
+  @override
+  String toString() => '$featureName hanya tersedia di aplikasi mobile. '
+      'Silakan gunakan aplikasi SoulScan di Android atau iOS untuk mengakses fitur ini.';
+}
+
+// ==================== HISTORY NOTIFIER ====================
 
 class HistoryNotifier extends StateNotifier<List<MentalResult>> {
   final HistoryRepository _repo;
@@ -33,20 +48,19 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
         return record.testType == _testType;
       }).toList();
 
-      state =
-          filteredRecords
-              .map(
-                (r) => MentalResult(
-                  id: r.id,
-                  score: r.score,
-                  riskLevel: r.riskLevel,
-                  description: r.note ?? r.riskLevel,
-                  timestamp: r.timestamp,
-                  testType: _testType,
-                ),
-              )
-              .toList()
-            ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      state = filteredRecords
+          .map(
+            (r) => MentalResult(
+              id: r.id,
+              score: r.score,
+              riskLevel: r.riskLevel,
+              description: r.note ?? r.riskLevel,
+              timestamp: r.timestamp,
+              testType: _testType,
+            ),
+          )
+          .toList()
+        ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
     } catch (_) {
       state = [];
     }
@@ -84,7 +98,33 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
     await _loadFromRepo();
   }
 
+  // ==================== PLATFORM VALIDATION ====================
+
+  bool get canExport => !kIsWeb;
+  
+  bool get canShare => !kIsWeb;
+
+  bool get canPrint => !kIsWeb;
+
+  bool get canSaveFile => !kIsWeb;
+
+  void _validatePlatform(String featureName) {
+    if (kIsWeb) {
+      throw PlatformNotSupportedException(featureName);
+    }
+  }
+
+  String getPlatformErrorMessage(String featureName) {
+    if (kIsWeb) {
+      return '$featureName hanya tersedia di aplikasi mobile.\n'
+          'Silakan gunakan aplikasi SoulScan di Android atau iOS.';
+    }
+    return '$featureName tersedia';
+  }
+
   Future<File> exportToPDF() async {
+    _validatePlatform('Export PDF');
+    
     try {
       _isExporting = true;
 
@@ -226,6 +266,134 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
       rethrow;
     }
   }
+
+  Future<void> sharePDF() async {
+    // Validasi platform
+    _validatePlatform('Share PDF');
+    
+    try {
+      _isExporting = true;
+      final file = await exportToPDF();
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: 'SoulScan ${_testType.toUpperCase()} Report',
+        subject: 'SoulScan Screening Report',
+      );
+    } catch (e) {
+      rethrow;
+    } finally {
+      _isExporting = false;
+    }
+  }
+
+  Future<void> printPDF() async {
+    // Validasi platform
+    _validatePlatform('Print PDF');
+    
+    try {
+      _isExporting = true;
+      final pdf = pw.Document();
+
+      if (state.isEmpty) {
+        pdf.addPage(
+          pw.Page(
+            build: (pw.Context context) {
+              return pw.Center(child: pw.Text('No records available'));
+            },
+          ),
+        );
+      } else {
+        pdf.addPage(
+          pw.Page(
+            margin: const pw.EdgeInsets.all(30),
+            build: (pw.Context context) {
+              return pw.Column(
+                children: [
+                  pw.Text(
+                    'SoulScan ${_testType.toUpperCase()} History',
+                    style: pw.TextStyle(
+                      fontSize: 18,
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColor.fromHex("#8A84FF"),
+                    ),
+                  ),
+                  pw.SizedBox(height: 20),
+                  _buildSimpleHistoryTable(),
+                  pw.SizedBox(height: 30),
+                  pw.Text(
+                    'Printed: ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())}',
+                    style: const pw.TextStyle(fontSize: 9),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      }
+
+      final bytes = await pdf.save();
+      await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => bytes);
+    } catch (e) {
+      rethrow;
+    } finally {
+      _isExporting = false;
+    }
+  }
+
+  Future<String> exportToCSV() async {
+    // Tetap bisa generate CSV di web, hanya tidak bisa save
+    if (state.isEmpty) return '';
+
+    final csv = StringBuffer();
+    csv.writeln('ID,Date,Time,Score,Risk Level,Test Type,Description');
+
+    for (final result in state) {
+      csv.write('${result.id ?? ""},');
+      csv.write('${DateFormat('yyyy-MM-dd').format(result.timestamp)},');
+      csv.write('${DateFormat('HH:mm:ss').format(result.timestamp)},');
+      csv.write('${result.score},');
+      csv.write('"${result.riskLevel}",');
+      csv.write('${result.testType},');
+      csv.writeln('"${result.description.replaceAll('"', '""')}"');
+    }
+
+    return csv.toString();
+  }
+
+  Future<File?> saveCSVToFile() async {
+    // Validasi platform
+    _validatePlatform('Save CSV File');
+    
+    try {
+      final csvContent = await exportToCSV();
+      if (csvContent.isEmpty) return null;
+
+      final String? path = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save CSV File',
+        fileName: 'soulscan_${_testType}_history.csv',
+        allowedExtensions: ['csv'],
+      );
+
+      if (path != null) {
+        final file = File(path);
+        await file.writeAsString(csvContent);
+        return file;
+      }
+      return null;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Method untuk preview CSV di web (hanya tampilkan, tidak save)
+  Future<String?> previewCSV() async {
+    if (state.isEmpty) return null;
+    return await exportToCSV();
+  }
+
+  String? getLastExportPath() => _lastExportPath;
+
+  // =============== HELPER METHODS ===============
 
   pw.Widget _buildSimpleHistoryTable() {
     if (state.isEmpty) {
@@ -400,119 +568,9 @@ class HistoryNotifier extends StateNotifier<List<MentalResult>> {
   pw.TextStyle _detailValueStyle() {
     return const pw.TextStyle(fontSize: 10);
   }
-
-  Future<void> sharePDF() async {
-    try {
-      _isExporting = true;
-      final file = await exportToPDF();
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: 'SoulScan ${_testType.toUpperCase()} Report',
-        subject: 'SoulScan Screening Report',
-      );
-    } catch (e) {
-      rethrow;
-    } finally {
-      _isExporting = false;
-    }
-  }
-
-  Future<void> printPDF() async {
-    try {
-      _isExporting = true;
-      final pdf = pw.Document();
-
-      if (state.isEmpty) {
-        pdf.addPage(
-          pw.Page(
-            build: (pw.Context context) {
-              return pw.Center(child: pw.Text('No records available'));
-            },
-          ),
-        );
-      } else {
-        pdf.addPage(
-          pw.Page(
-            margin: const pw.EdgeInsets.all(30),
-            build: (pw.Context context) {
-              return pw.Column(
-                children: [
-                  pw.Text(
-                    'SoulScan ${_testType.toUpperCase()} History',
-                    style: pw.TextStyle(
-                      fontSize: 18,
-                      fontWeight: pw.FontWeight.bold,
-                      color: PdfColor.fromHex("#8A84FF"),
-                    ),
-                  ),
-                  pw.SizedBox(height: 20),
-                  _buildSimpleHistoryTable(),
-                  pw.SizedBox(height: 30),
-                  pw.Text(
-                    'Printed: ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())}',
-                    style: const pw.TextStyle(fontSize: 9),
-                  ),
-                ],
-              );
-            },
-          ),
-        );
-      }
-
-      final bytes = await pdf.save();
-      await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => bytes);
-    } catch (e) {
-      rethrow;
-    } finally {
-      _isExporting = false;
-    }
-  }
-
-  Future<String> exportToCSV() async {
-    if (state.isEmpty) return '';
-
-    final csv = StringBuffer();
-    csv.writeln('ID,Date,Time,Score,Risk Level,Test Type,Description');
-
-    for (final result in state) {
-      csv.write('${result.id ?? ""},');
-      csv.write('${DateFormat('yyyy-MM-dd').format(result.timestamp)},');
-      csv.write('${DateFormat('HH:mm:ss').format(result.timestamp)},');
-      csv.write('${result.score},');
-      csv.write('"${result.riskLevel}",');
-      csv.write('${result.testType},');
-      csv.writeln('"${result.description.replaceAll('"', '""')}"');
-    }
-
-    return csv.toString();
-  }
-
-  Future<File?> saveCSVToFile() async {
-    try {
-      final csvContent = await exportToCSV();
-      if (csvContent.isEmpty) return null;
-
-      final String? path = await FilePicker.platform.saveFile(
-        dialogTitle: 'Save CSV File',
-        fileName: 'soulscan_${_testType}_history.csv',
-        allowedExtensions: ['csv'],
-      );
-
-      if (path != null) {
-        final file = File(path);
-        await file.writeAsString(csvContent);
-        return file;
-      }
-      return null;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  String? getLastExportPath() => _lastExportPath;
 }
 
-// ==================== AI HISTORY PROVIDER ====================
+// ==================== AI HISTORY NOTIFIER ====================
 
 class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
   final HistoryRepository _repo;
@@ -649,7 +707,40 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
     await _loadFromRepo();
   }
 
+  // ==================== PLATFORM VALIDATION ====================
+
+  /// Cek apakah fitur export tersedia di platform ini
+  bool get canExport => !kIsWeb;
+  
+  /// Cek apakah fitur share tersedia di platform ini
+  bool get canShare => !kIsWeb;
+  
+  /// Cek apakah fitur print tersedia di platform ini
+  bool get canPrint => !kIsWeb;
+  
+  /// Cek apakah fitur save file tersedia di platform ini
+  bool get canSaveFile => !kIsWeb;
+
+  /// Validasi platform sebelum menjalankan operasi file
+  void _validatePlatform(String featureName) {
+    if (kIsWeb) {
+      throw PlatformNotSupportedException(featureName);
+    }
+  }
+
+  /// Mendapatkan pesan error untuk platform
+  String getPlatformErrorMessage(String featureName) {
+    if (kIsWeb) {
+      return '$featureName hanya tersedia di aplikasi mobile.\n'
+          'Silakan gunakan aplikasi SoulScan di Android atau iOS.';
+    }
+    return '$featureName tersedia';
+  }
+
   Future<File> exportToPDF() async {
+    // Validasi platform
+    _validatePlatform('Export PDF');
+    
     try {
       _isExporting = true;
 
@@ -758,45 +849,10 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
     }
   }
 
-  pw.Widget _buildAIHistoryTable() {
-    if (state.isEmpty) {
-      return pw.Center(child: pw.Text('No AI assessments available'));
-    }
-
-    return pw.Table.fromTextArray(
-      context: null,
-      border: pw.TableBorder.all(color: PdfColors.grey300, width: 0.5),
-      headerStyle: pw.TextStyle(
-        fontWeight: pw.FontWeight.bold,
-        fontSize: 11,
-        color: PdfColors.white,
-      ),
-      headerDecoration: pw.BoxDecoration(color: PdfColor.fromHex("#8A84FF")),
-      cellStyle: const pw.TextStyle(fontSize: 10),
-      headers: [
-        'No',
-        'Date',
-        'Score',
-        'Risk Level',
-        'AI Confidence',
-        'Sensors Used',
-      ],
-      data: state.asMap().entries.map((entry) {
-        final index = entry.key + 1;
-        final result = entry.value;
-        return [
-          index.toString(),
-          DateFormat('dd/MM/yy').format(result.timestamp),
-          result.score.toString(),
-          result.riskLevel,
-          '${(result.aiConfidence * 100).toStringAsFixed(0)}%',
-          'PPG + Accelerometer',
-        ];
-      }).toList(),
-    );
-  }
-
   Future<void> sharePDF() async {
+    // Validasi platform
+    _validatePlatform('Share PDF');
+    
     try {
       _isExporting = true;
       final file = await exportToPDF();
@@ -813,6 +869,9 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
   }
 
   Future<void> printPDF() async {
+    // Validasi platform
+    _validatePlatform('Print PDF');
+    
     try {
       _isExporting = true;
       final pdf = pw.Document();
@@ -864,6 +923,7 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
   }
 
   Future<String> exportToCSV() async {
+    // Tetap bisa generate CSV di web, hanya tidak bisa save
     if (state.isEmpty) return '';
 
     final csv = StringBuffer();
@@ -890,6 +950,9 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
   }
 
   Future<File?> saveCSVToFile() async {
+    // Validasi platform
+    _validatePlatform('Save CSV File');
+    
     try {
       final csvContent = await exportToCSV();
       if (csvContent.isEmpty) return null;
@@ -911,17 +974,77 @@ class AIHistoryNotifier extends StateNotifier<List<AIResult>> {
     }
   }
 
+  // Method untuk preview CSV di web (hanya tampilkan, tidak save)
+  Future<String?> previewCSV() async {
+    if (state.isEmpty) return null;
+    return await exportToCSV();
+  }
+
   String? getLastExportPath() => _lastExportPath;
+
+  pw.Widget _buildAIHistoryTable() {
+    if (state.isEmpty) {
+      return pw.Center(child: pw.Text('No AI assessments available'));
+    }
+
+    return pw.Table.fromTextArray(
+      context: null,
+      border: pw.TableBorder.all(color: PdfColors.grey300, width: 0.5),
+      headerStyle: pw.TextStyle(
+        fontWeight: pw.FontWeight.bold,
+        fontSize: 11,
+        color: PdfColors.white,
+      ),
+      headerDecoration: pw.BoxDecoration(color: PdfColor.fromHex("#8A84FF")),
+      cellStyle: const pw.TextStyle(fontSize: 10),
+      headers: [
+        'No',
+        'Date',
+        'Score',
+        'Risk Level',
+        'AI Confidence',
+        'Sensors Used',
+      ],
+      data: state.asMap().entries.map((entry) {
+        final index = entry.key + 1;
+        final result = entry.value;
+        return [
+          index.toString(),
+          DateFormat('dd/MM/yy').format(result.timestamp),
+          result.score.toString(),
+          result.riskLevel,
+          '${(result.aiConfidence * 100).toStringAsFixed(0)}%',
+          'PPG + Accelerometer',
+        ];
+      }).toList(),
+    );
+  }
 }
 
-// Provider untuk AI History
+// ==================== PROVIDERS ====================
+
+final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
+  return HistoryRepository();
+});
+
+final psikologiHistoryProvider =
+    StateNotifierProvider<HistoryNotifier, List<MentalResult>>((ref) {
+  final repo = ref.watch(historyRepositoryProvider);
+  return HistoryNotifier(repo, 'psikologi');
+});
+
+final mentalHistoryProvider =
+    StateNotifierProvider<HistoryNotifier, List<MentalResult>>((ref) {
+  final repo = ref.watch(historyRepositoryProvider);
+  return HistoryNotifier(repo, 'mental');
+});
+
 final aiHistoryProvider =
     StateNotifierProvider<AIHistoryNotifier, List<AIResult>>((ref) {
-      final repo = ref.watch(historyRepositoryProvider);
-      return AIHistoryNotifier(repo);
-    });
+  final repo = ref.watch(historyRepositoryProvider);
+  return AIHistoryNotifier(repo);
+});
 
-// Update exportStatusProvider untuk include AI
 final exportStatusProvider = Provider<Map<String, bool>>((ref) {
   return {
     'psikologi': ref.read(psikologiHistoryProvider.notifier).isExporting,
@@ -930,7 +1053,39 @@ final exportStatusProvider = Provider<Map<String, bool>>((ref) {
   };
 });
 
-// Update allHistoryProvider untuk include AI results
+// Provider untuk cek kemampuan platform
+final platformCapabilityProvider = Provider<Map<String, dynamic>>((ref) {
+  final psikologiNotifier = ref.read(psikologiHistoryProvider.notifier);
+  final mentalNotifier = ref.read(mentalHistoryProvider.notifier);
+  final aiNotifier = ref.read(aiHistoryProvider.notifier);
+  
+  return {
+    'isWeb': kIsWeb,
+    'isMobile': !kIsWeb && (Platform.isAndroid || Platform.isIOS),
+    'canExport': !kIsWeb,
+    'canShare': !kIsWeb,
+    'canPrint': !kIsWeb,
+    'canSaveFile': !kIsWeb,
+    'psikologiCanExport': psikologiNotifier.canExport,
+    'mentalCanExport': mentalNotifier.canExport,
+    'aiCanExport': aiNotifier.canExport,
+    'webMessage': kIsWeb 
+      ? 'Fitur export hanya tersedia di aplikasi mobile.\n'
+          'Silakan download aplikasi SoulScan dari Play Store atau App Store.'
+      : null,
+  };
+});
+
+// Provider untuk mendapatkan pesan error platform
+final platformMessageProvider = Provider<String>((ref) {
+  if (kIsWeb) {
+    return '⚠️ Fitur export tidak tersedia di website.\n'
+        'Untuk mengexport data sebagai PDF atau CSV, '
+        'silakan gunakan aplikasi SoulScan di perangkat mobile Anda.';
+  }
+  return 'Fitur export tersedia di perangkat ini.';
+});
+
 final allHistoryProvider = Provider<List<MentalResult>>((ref) {
   final psikologi = ref.watch(psikologiHistoryProvider);
   final mental = ref.watch(mentalHistoryProvider);
@@ -954,43 +1109,12 @@ final allHistoryProvider = Provider<List<MentalResult>>((ref) {
     ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 });
 
-final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
-  return HistoryRepository();
-});
-
-final psikologiHistoryProvider =
-    StateNotifierProvider<HistoryNotifier, List<MentalResult>>((ref) {
-      final repo = ref.watch(historyRepositoryProvider);
-      return HistoryNotifier(repo, 'psikologi');
-    });
-
-final mentalHistoryProvider =
-    StateNotifierProvider<HistoryNotifier, List<MentalResult>>((ref) {
-      final repo = ref.watch(historyRepositoryProvider);
-      return HistoryNotifier(repo, 'mental');
-    });
-
-// final exportStatusProvider = Provider<Map<String, bool>>((ref) {
-//   return {
-//     'psikologi': ref.read(psikologiHistoryProvider.notifier).isExporting,
-//     'mental': ref.read(mentalHistoryProvider.notifier).isExporting,
-//   };
-// });
-
-// final allHistoryProvider = Provider<List<MentalResult>>((ref) {
-//   final psikologi = ref.watch(psikologiHistoryProvider);
-//   final mental = ref.watch(mentalHistoryProvider);
-//   return [...psikologi, ...mental]
-//     ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
-// });
-
 final historyListProvider = FutureProvider<List<ScreeningRecord>>((ref) async {
   final repo = ref.read(historyRepositoryProvider);
   return await repo.getAll();
 });
 
 // Dashboard statistics provider
-// Dashboard statistics provider - PERBAIKI dengan type safety
 final dashboardStatsProvider = Provider<Map<String, dynamic>>((ref) {
   final psikologi = ref.watch(psikologiHistoryProvider);
   final mental = ref.watch(mentalHistoryProvider);
