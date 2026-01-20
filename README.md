@@ -17,12 +17,30 @@ flutter pub get
 ```
 
 ## Run Handphone
+#### REFRENSI https://pub.dev/packages/flutter_launcher_icons
 ```bash 
 dart run flutter_launcher_icons
+
+# Bentuk flutter_launcher_icons di pubspec.yaml
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/logonotext.png" # Sesuaikan Path-nya
+  min_sdk_android: 21 
 ```
 atau
 ```bash
 dart run flutter_launcher_icons -f <your config file name here>
+
+# Bentuk flutter_launcher_icons di file flutter_launcher_icons.yaml
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/app_icon.png" # Sesuaikan Path-nya
+  min_sdk_android: 21
+
+# Run Cepat
+dart run flutter_launcher_icons -f flutter_launcher_icons.yaml
 ```
 FUNGSINYA UNTUK MENGGANTI ICON FLUTTER MENJADI ICON ATAU LOGO DARI APLIKASI SOULSCAN 
 
