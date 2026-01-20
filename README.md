@@ -26,7 +26,7 @@ dart run flutter_launcher_icons -f <your config file name here>
 ```
 FUNGSINYA UNTUK MENGGANTI ICON FLUTTER MENJADI ICON ATAU LOGO DARI APLIKASI SOULSCAN 
 
-### Note: Pastikan Menggunakan Android bukan IOS, dan Pastikan HP Tersambung Dengan Laptop
+### Note: Pastikan Menggunakan Android bukan IOS, dan Pastikan HP Tersambung Dengan Laptop Menggunakan Kabel Data
 
 ## Run Program
 ```bash
