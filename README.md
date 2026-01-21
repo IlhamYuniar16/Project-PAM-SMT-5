@@ -16,6 +16,8 @@ git clone https://github.com/IlhamYuniar16/Project-PAM-SMT-5.git
 flutter pub get
 ```
 
+#### Run bisa menggunakan emulator atau hp sendiri, ( jika hp sendiri ikuti langkah "Run Handphone", jika emulator "Run Program" )
+
 ## Run Handphone
 #### REFRENSI https://pub.dev/packages/flutter_launcher_icons
 ```bash 

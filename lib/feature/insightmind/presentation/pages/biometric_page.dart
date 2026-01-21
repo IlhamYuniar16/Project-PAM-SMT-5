@@ -122,8 +122,7 @@ class BiometricPage extends ConsumerWidget {
                                   color: Colors.black87,
                                 ),
                               ),
-                              Text(
-                                "Deteksi denyut nadi berbasis kamera",
+                              Text(ppg.capturing ? "Menggunakan Kamera" : "Tidak Digunakan",
                                 style: GoogleFonts.poppins(
                                   fontSize: 12.sp,
                                   color: Colors.grey[600],
