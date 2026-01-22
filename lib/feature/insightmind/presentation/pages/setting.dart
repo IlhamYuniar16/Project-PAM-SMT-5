@@ -170,7 +170,13 @@ class _SettingState extends State<Setting> {
                                     ElevatedButton(
                                       onPressed: () {
                                         setState(() {
-                                          Navigator.push(context, MaterialPageRoute(builder: (_) => const DashboardPage()));
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const DashboardPage(),
+                                            ),
+                                          );
                                         });
                                       },
                                       style: ButtonStyle(
@@ -187,17 +193,98 @@ class _SettingState extends State<Setting> {
                                                 ),
                                           ),
                                         ),
-                                        padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 5, vertical: 10))
+                                        padding: MaterialStateProperty.all(
+                                          EdgeInsets.symmetric(
+                                            horizontal: 5,
+                                            vertical: 10,
+                                          ),
+                                        ),
                                       ),
                                       child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Icon(Icons.dashboard, size: 25, color: Colors.black,),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            'Dashboard',
-                                            style: GoogleFonts.poppins(
-                                              textStyle: TextStyle(color: Colors.black),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.dashboard,
+                                                size: 25,
+                                                color: Colors.black,
+                                              ),
+                                              SizedBox(width: 10),
+                                              Text(
+                                                'Dashboard',
+                                                style: GoogleFonts.poppins(
+                                                  textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Icon(
+                                            FontAwesomeIcons.chevronRight,
+                                            color: Colors.black,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    if (openGaris) Divider(color: Colors.black),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => penilaian(),
                                             ),
+                                          );
+                                        });
+                                      },
+                                      style: ButtonStyle(
+                                        elevation: MaterialStateProperty.all(0),
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                              Colors.white,
+                                            ),
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadiusGeometry.circular(
+                                                  5.r,
+                                                ),
+                                          ),
+                                        ),
+                                        padding: MaterialStateProperty.all(
+                                          EdgeInsets.symmetric(
+                                            horizontal: 5.w,
+                                            vertical: 5.h,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                FontAwesomeIcons.star,
+                                                color: Colors.black,
+                                              ),
+                                              SizedBox(width: 10.w),
+                                              Text(
+                                                'Berikan Penilaian',
+                                                style: GoogleFonts.poppins(
+                                                  textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Icon(
+                                            FontAwesomeIcons.chevronRight,
+                                            color: Colors.black,
                                           ),
                                         ],
                                       ),
@@ -269,74 +356,122 @@ class _SettingState extends State<Setting> {
                                       ),
                                     ),
                                     if (openGaris) Divider(color: Colors.black),
+
+                                    // if (openGaris) Divider(color: Colors.black),
                                     ElevatedButton(
                                       onPressed: () {
                                         setState(() {
-                                          Navigator.push(context, MaterialPageRoute(builder: (_) => penilaian()));
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const PenilaianHistoryPage(),
+                                            ),
+                                          );
                                         });
                                       },
                                       style: ButtonStyle(
                                         elevation: MaterialStateProperty.all(0),
-                                        backgroundColor: MaterialStateProperty.all(Colors.white),
-                                        shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(5.r))),
-                                        padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h))
-                                      ), 
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                              Colors.white,
+                                            ),
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadiusGeometry.circular(
+                                                  5.r,
+                                                ),
+                                          ),
+                                        ),
+                                        padding: MaterialStateProperty.all(
+                                          EdgeInsets.symmetric(
+                                            horizontal: 5.w,
+                                            vertical: 5.h,
+                                          ),
+                                        ),
+                                      ),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
                                             children: [
-                                              Icon(FontAwesomeIcons.star, color: Colors.black,),
-                                              SizedBox(
-                                                width: 10.w,
+                                              Icon(
+                                                FontAwesomeIcons.history,
+                                                color: Colors.black,
                                               ),
-                                          Text('Berikan Penilaian',
-                                          style: GoogleFonts.poppins(
-                                            textStyle: TextStyle(
-                                              color: Colors.black
-                                            )
-                                          ),)
+                                              SizedBox(width: 10.w),
+                                              Text(
+                                                'Riwayat Penilaian',
+                                                style: GoogleFonts.poppins(
+                                                  textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
                                             ],
                                           ),
-                                          Icon(FontAwesomeIcons.chevronRight, color: Colors.black,)
+                                          Icon(
+                                            FontAwesomeIcons.chevronRight,
+                                            color: Colors.black,
+                                          ),
                                         ],
-                                      )
                                       ),
-                                      if (openGaris) Divider(color: Colors.black),
+                                    ),
+                                    if (openGaris) Divider(color: Colors.black),
                                     ElevatedButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          Navigator.push(context, MaterialPageRoute(builder: (_) => const PenilaianHistoryPage()));
-                                        });
-                                      },
+                                      onPressed: () {},
                                       style: ButtonStyle(
                                         elevation: MaterialStateProperty.all(0),
-                                        backgroundColor: MaterialStateProperty.all(Colors.white),
-                                        shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(5.r))),
-                                        padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h))
-                                      ), 
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                              Colors.white,
+                                            ),
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadiusGeometry.circular(
+                                                  5.r,
+                                                ),
+                                          ),
+                                        ),
+                                        padding: MaterialStateProperty.all(
+                                          EdgeInsets.symmetric(
+                                            horizontal: 5.w,
+                                            vertical: 5.h,
+                                          ),
+                                        ),
+                                      ),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
                                             children: [
-                                              Icon(FontAwesomeIcons.history, color: Colors.black,),
-                                              SizedBox(
-                                                width: 10.w,
+                                              Icon(
+                                                FontAwesomeIcons.download,
+                                                color: Colors.black,
                                               ),
-                                          Text('Riwayat Penilaian',
-                                          style: GoogleFonts.poppins(
-                                            textStyle: TextStyle(
-                                              color: Colors.black
-                                            )
-                                          ),)
+                                              SizedBox(width: 10.w),
+                                              Text(
+                                                'Pembaruan Aplikasi',
+                                                style: GoogleFonts.poppins(
+                                                  textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
                                             ],
                                           ),
-                                          Icon(FontAwesomeIcons.chevronRight, color: Colors.black,)
+                                          Icon(
+                                            FontAwesomeIcons.chevronRight,
+                                            color: Colors.black,
+                                          ),
                                         ],
-                                      )
                                       ),
-                                      if (openGaris) Divider(color: Colors.black),
+                                    ),
+                                    if (openGaris) Divider(color: Colors.black),
                                     ElevatedButton(
                                       onPressed: () {},
                                       style: ButtonStyle(
