@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/pages/screening_page_psikologi.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
+import 'package:flutter_project_pam/feature/insightmind/data/local/penilaian.dart';
 
 
 class penilaian extends StatefulWidget {
@@ -13,7 +16,59 @@ class penilaian extends StatefulWidget {
 
 class _penilaianState extends State<penilaian> {
   String? selectedCategory;
-TextEditingController feedbackController = TextEditingController();
+  int rating = 0;
+  TextEditingController feedbackController = TextEditingController();
+
+  Future<void> _savePenilaian() async {
+    if (rating == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mohon berikan rating terlebih dahulu')),
+      );
+      return;
+    }
+
+    if (selectedCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mohon pilih kategori feedback')),
+      );
+      return;
+    }
+
+    try {
+      final box = Hive.box<Penilaian>('penilaian_history');
+      final penilaian = Penilaian(
+        id: const Uuid().v4(),
+        timestamp: DateTime.now(),
+        rating: rating,
+        category: selectedCategory!,
+        feedback: feedbackController.text.isEmpty ? 'Tidak ada komentar' : feedbackController.text,
+      );
+      await box.add(penilaian);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Penilaian berhasil dikirim, terima kasih!')),
+      );
+
+      // Reset form
+      setState(() {
+        rating = 0;
+        selectedCategory = null;
+        feedbackController.clear();
+      });
+
+      // Pop back after 2 seconds
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,48 +156,20 @@ TextEditingController feedbackController = TextEditingController();
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.star,
-                                    size: 26,
-                                    color: Colors.grey,
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  Icon(
-                                    Icons.star,
-                                    size: 26,
-                                    color: Colors.grey,
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  Icon(
-                                    Icons.star,
-                                    size: 26,
-                                    color: Colors.grey,
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  Icon(
-                                    Icons.star,
-                                    size: 26,
-                                    color: Colors.grey,
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  Icon(
-                                    Icons.star,
-                                    size: 26,
-                                    color: Colors.grey,
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                ],
+                                children: List.generate(5, (index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        rating = index + 1;
+                                      });
+                                    },
+                                    child: Icon(
+                                      Icons.star,
+                                      size: 26,
+                                      color: index < rating ? Colors.amber : Colors.grey,
+                                    ),
+                                  );
+                                }),
                               ),
                               const SizedBox(
                                 height: 5,
@@ -250,7 +277,7 @@ TextEditingController feedbackController = TextEditingController();
                                 borderRadius: BorderRadius.circular(16.r),
                               ),
                             ),
-                            onPressed: (){},
+                            onPressed: _savePenilaian,
                             child: Text(
                               'Kirim Penilaian',
                               style: TextStyle(
