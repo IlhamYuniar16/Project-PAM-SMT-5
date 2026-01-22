@@ -21,6 +21,23 @@ class _PenilaianHistoryPageState extends State<PenilaianHistoryPage> {
     penilaianBox = Hive.box<Penilaian>('penilaian_history');
   }
 
+  String _statusRating(int rating) {
+    switch (rating) {
+      case 1:
+        return "Tidak Puas";
+      case 2:
+        return "Sedikit Puas";
+      case 3:
+        return "Lumayan Puas";
+      case 4:
+        return "Puas";
+      case 5:
+        return "Sangat Puas";
+      default:
+        return "";
+    }
+  }
+
   Color _getCategoryColor(String category) {
     switch (category) {
       case 'Bug':
@@ -148,9 +165,15 @@ class _PenilaianHistoryPageState extends State<PenilaianHistoryPage> {
                         ],
                       ),
                       SizedBox(height: 8.h),
-                      Text(
-                        formattedDate,
-                        style: TextStyle(fontSize: 11.sp, color: Colors.grey),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            formattedDate,
+                            style: TextStyle(fontSize: 11.sp, color: Colors.grey),
+                          ),
+                          Text(_statusRating(penilaian.rating))
+                        ],
                       ),
                       SizedBox(height: 8.h),
                       if (penilaian.feedback.isNotEmpty)

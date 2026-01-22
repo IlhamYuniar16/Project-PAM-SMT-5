@@ -529,7 +529,7 @@ class _SettingState extends State<Setting> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 50.h),
+                  SizedBox(height: 30.h),
                   Center(
                     child: Column(
                       children: [

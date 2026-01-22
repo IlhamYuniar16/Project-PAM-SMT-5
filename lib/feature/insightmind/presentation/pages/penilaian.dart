@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_project_pam/feature/insightmind/presentation/pages/screening_page_psikologi.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_project_pam/feature/insightmind/data/local/penilaian.dart';
-
 
 class penilaian extends StatefulWidget {
   const penilaian({super.key});
@@ -17,7 +18,25 @@ class penilaian extends StatefulWidget {
 class _penilaianState extends State<penilaian> {
   String? selectedCategory;
   int rating = 0;
+  String? statusRate;
   TextEditingController feedbackController = TextEditingController();
+
+  String statusRating(int rating) {
+    switch (rating) {
+      case 1:
+        return "Tidak Puas";
+      case 2:
+        return "Sedikit Puas";
+      case 3:
+        return "Lumayan Puas";
+      case 4:
+        return "Puas";
+      case 5:
+        return "Sangat Puas";
+      default:
+        return "Berikan Penilaian Kami";
+    }
+  }
 
   Future<void> _savePenilaian() async {
     if (rating == 0) {
@@ -41,13 +60,17 @@ class _penilaianState extends State<penilaian> {
         timestamp: DateTime.now(),
         rating: rating,
         category: selectedCategory!,
-        feedback: feedbackController.text.isEmpty ? 'Tidak ada komentar' : feedbackController.text,
+        feedback: feedbackController.text.isEmpty
+            ? 'Tidak ada komentar'
+            : feedbackController.text,
       );
       await box.add(penilaian);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Penilaian berhasil dikirim, terima kasih!')),
+        const SnackBar(
+          content: Text('Penilaian berhasil dikirim, terima kasih!'),
+        ),
       );
 
       // Reset form
@@ -64,9 +87,9 @@ class _penilaianState extends State<penilaian> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
     }
   }
 
@@ -133,27 +156,21 @@ class _penilaianState extends State<penilaian> {
                                   'assets/img/heart.png',
                                 ),
                               ),
-                              const SizedBox(
-                                height: 15,
-                              ),
+                              const SizedBox(height: 15),
                               Text(
                                 'Suara anda sangat berarti',
                                 style: TextStyle(
                                   fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold
-                                ), 
+                                  fontWeight: FontWeight.bold,
+                                ),
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(
-                                height: 5,
-                              ),
+                              const SizedBox(height: 5),
                               Text(
                                 'Bantu kami menciptakan pengalaman aplikasi yang lebih baik dan nyaman untukmu.',
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(
-                                height: 15,
-                              ),
+                              const SizedBox(height: 15),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: List.generate(5, (index) {
@@ -166,29 +183,24 @@ class _penilaianState extends State<penilaian> {
                                     child: Icon(
                                       Icons.star,
                                       size: 26,
-                                      color: index < rating ? Colors.amber : Colors.grey,
+                                      color: index < rating
+                                          ? Colors.amber
+                                          : Colors.grey,
                                     ),
                                   );
                                 }),
                               ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                'Sangat Puas!'
-                              )
+                              const SizedBox(height: 5),
+                              Text(statusRating(rating)),
                             ],
                           ),
                         ),
-                        Divider(
-                          height: 50,
-                          color: Color(0xFFE0E0E0),
-                        ),
+                        Divider(height: 50, color: Color(0xFFE0E0E0)),
                         Text(
                           'Apa yang bisa kami perbaiki?',
                           style: TextStyle(
                             fontSize: 18.sp,
-                            fontWeight: FontWeight.bold
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -288,9 +300,7 @@ class _penilaianState extends State<penilaian> {
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 5,
-                        ),
+                        const SizedBox(height: 5),
                         Row(
                           children: [
                             Icon(
@@ -298,21 +308,17 @@ class _penilaianState extends State<penilaian> {
                               size: 16,
                               color: Colors.grey.shade700,
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
+                            const SizedBox(width: 5),
                             Text(
                               'Ulasan kamu bersifat anonim',
                               style: TextStyle(
                                 color: Colors.grey.shade700,
-                                fontSize: 14
+                                fontSize: 14,
                               ),
-                            )
+                            ),
                           ],
                         ),
-                        const SizedBox(
-                          height: 30,
-                        ),
+                        const SizedBox(height: 30),
                         Center(
                           child: Column(
                             children: [
